@@ -1,98 +1,132 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
-
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
+import { AccountSummaryCard } from '@/components/dashboard/account-summary-card';
+import { CategoryChart } from '@/components/dashboard/category-chart';
+import { QuickActions } from '@/components/dashboard/quick-actions';
+import { RecentExpensesList } from '@/components/dashboard/recent-expenses-list';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+import { Colors } from '@/constants/theme';
+import {
+  getCategorySpending,
+  getRecentExpenses,
+  getTotalBalance,
+  mockAccounts
+} from '@/data/mock-data';
+import { useColorScheme } from '@/hooks/use-color-scheme';
+import React from 'react';
+import { RefreshControl, ScrollView, StyleSheet } from 'react-native';
 
-export default function HomeScreen() {
+export default function DashboardScreen() {
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme ?? 'light'];
+  const [refreshing, setRefreshing] = React.useState(false);
+
+  const totalBalance = getTotalBalance();
+  const recentExpenses = getRecentExpenses(6);
+  const categorySpending = getCategorySpending();
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    // Simulate API call
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 1000);
+  }, []);
+
+  const handleAddExpense = () => {
+    // TODO: Navigate to add expense screen
+    console.log('Add expense');
+  };
+
+  const handleAddIncome = () => {
+    // TODO: Navigate to add income screen
+    console.log('Add income');
+  };
+
+  const handleViewTransactions = () => {
+    // TODO: Navigate to transactions screen
+    console.log('View transactions');
+  };
+
+  const handleManageAccounts = () => {
+    // TODO: Navigate to accounts screen
+    console.log('Manage accounts');
+  };
+
+  const handleViewAllExpenses = () => {
+    // TODO: Navigate to all expenses screen
+    console.log('View all expenses');
+  };
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+    <ThemedView style={[styles.container, { backgroundColor: colors.background }]}>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={colors.primary}
+          />
+        }
+      >
+        {/* Header */}
+        <ThemedView style={styles.header}>
+          <ThemedText style={styles.greeting}>Welcome back! 👋</ThemedText>
+          <ThemedText style={[styles.subtitle, { color: colors.textSecondary }]}>
+            Here's your financial overview
+          </ThemedText>
+        </ThemedView>
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+        {/* Account Summary */}
+        <AccountSummaryCard
+          totalBalance={totalBalance}
+          accountCount={mockAccounts.length}
+        />
+
+        {/* Quick Actions */}
+        <QuickActions
+          onAddExpense={handleAddExpense}
+          onAddIncome={handleAddIncome}
+          onViewTransactions={handleViewTransactions}
+          onManageAccounts={handleManageAccounts}
+        />
+
+        {/* Category Spending Chart */}
+        <CategoryChart data={categorySpending} />
+
+        {/* Recent Expenses */}
+        <RecentExpensesList
+          expenses={recentExpenses}
+          onViewAll={handleViewAllExpenses}
+        />
+      </ScrollView>
+    </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  container: {
+    flex: 1,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  scrollView: {
+    flex: 1,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  scrollContent: {
+    paddingBottom: 24,
+  },
+  header: {
+    paddingHorizontal: 16,
+    paddingTop: 16,
+    paddingBottom: 8,
+  },
+  greeting: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  subtitle: {
+    fontSize: 16,
   },
 });

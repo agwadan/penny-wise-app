@@ -11,19 +11,49 @@ const tintColorDark = '#fff';
 export const Colors = {
   light: {
     text: '#11181C',
-    background: '#fff',
+    background: '#F8F9FA',
     tint: tintColorLight,
     icon: '#687076',
     tabIconDefault: '#687076',
     tabIconSelected: tintColorLight,
+    // Dashboard specific colors
+    primary: '#10B981',
+    primaryDark: '#059669',
+    secondary: '#3B82F6',
+    cardBackground: '#FFFFFF',
+    cardBorder: '#E5E7EB',
+    success: '#10B981',
+    warning: '#F59E0B',
+    error: '#EF4444',
+    textSecondary: '#6B7280',
+    textMuted: '#9CA3AF',
+    divider: '#E5E7EB',
+    // Gradient colors
+    gradientStart: '#10B981',
+    gradientEnd: '#059669',
   },
   dark: {
     text: '#ECEDEE',
-    background: '#151718',
+    background: '#0F172A',
     tint: tintColorDark,
     icon: '#9BA1A6',
     tabIconDefault: '#9BA1A6',
     tabIconSelected: tintColorDark,
+    // Dashboard specific colors
+    primary: '#10B981',
+    primaryDark: '#059669',
+    secondary: '#3B82F6',
+    cardBackground: '#1E293B',
+    cardBorder: '#334155',
+    success: '#10B981',
+    warning: '#F59E0B',
+    error: '#EF4444',
+    textSecondary: '#94A3B8',
+    textMuted: '#64748B',
+    divider: '#334155',
+    // Gradient colors
+    gradientStart: '#10B981',
+    gradientEnd: '#059669',
   },
 };
 
