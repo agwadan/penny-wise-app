@@ -2,7 +2,7 @@
 // Matches the database schema from the development plan
 
 export type AccountType = 'checking' | 'savings' | 'cash' | 'credit_card';
-export type Currency = 'USD' | 'EUR' | 'GBP' | 'KES';
+export type Currency = 'USD' | 'EUR' | 'GBP' | 'KES' | 'UGX';
 
 export interface Account {
     id: string;
@@ -34,9 +34,32 @@ export interface Expense {
     createdAt: Date;
 }
 
+export type TransactionType = 'expense' | 'income';
+
+export interface Expense {
+    id: string;
+    userId: string;
+    accountId: string;
+    amount: number;
+    category: string;
+    date: Date;
+    notes?: string;
+    createdAt: Date;
+    type?: TransactionType; // Optional for backward compatibility with existing data
+}
+
 export interface CategorySpending {
     category: string;
     amount: number;
     color: string;
     percentage: number;
+}
+
+export interface TransactionFormData {
+    type: TransactionType;
+    amount: string;
+    categoryId: string;
+    accountId: string;
+    date: Date;
+    notes: string;
 }

@@ -14,16 +14,23 @@ interface AccountSummaryCardProps {
 export function AccountSummaryCard({
     totalBalance,
     accountCount,
-    currency = 'USD'
+    currency = 'UGX'
 }: AccountSummaryCardProps) {
     const colorScheme = useColorScheme();
     const colors = Colors[colorScheme ?? 'light'];
 
     const formatCurrency = (amount: number) => {
-        return new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: currency,
-        }).format(amount);
+        const currencySymbols: Record<string, string> = {
+            USD: '$',
+            EUR: '€',
+            GBP: '£',
+            KES: 'KSh',
+            UGX: 'UGX',
+        };
+        return `${currencySymbols[currency]} ${amount.toLocaleString('en-US', {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
+        })}`;
     };
 
     return (

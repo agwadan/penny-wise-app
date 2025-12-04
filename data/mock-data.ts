@@ -20,8 +20,8 @@ export const mockAccounts: Account[] = [
         userId: 'user1',
         name: 'Main Checking',
         type: 'checking',
-        balance: 4250.75,
-        currency: 'USD',
+        balance: 4250750,
+        currency: 'UGX',
         createdAt: new Date('2024-01-15'),
     },
     {
@@ -29,8 +29,8 @@ export const mockAccounts: Account[] = [
         userId: 'user1',
         name: 'Savings Account',
         type: 'savings',
-        balance: 12500.00,
-        currency: 'USD',
+        balance: 12500000,
+        currency: 'UGX',
         createdAt: new Date('2024-01-15'),
     },
     {
@@ -38,8 +38,8 @@ export const mockAccounts: Account[] = [
         userId: 'user1',
         name: 'Credit Card',
         type: 'credit_card',
-        balance: -850.50,
-        currency: 'USD',
+        balance: -850500,
+        currency: 'UGX',
         createdAt: new Date('2024-02-01'),
     },
     {
@@ -47,8 +47,8 @@ export const mockAccounts: Account[] = [
         userId: 'user1',
         name: 'Cash Wallet',
         type: 'cash',
-        balance: 320.00,
-        currency: 'USD',
+        balance: 320000,
+        currency: 'UGX',
         createdAt: new Date('2024-01-15'),
     },
 ];
@@ -58,7 +58,7 @@ export const mockExpenses: Expense[] = [
         id: '1',
         userId: 'user1',
         accountId: '1',
-        amount: 45.50,
+        amount: 168000,
         category: 'Food & Dining',
         date: new Date('2024-11-29'),
         notes: 'Lunch at Italian restaurant',
@@ -68,7 +68,7 @@ export const mockExpenses: Expense[] = [
         id: '2',
         userId: 'user1',
         accountId: '1',
-        amount: 120.00,
+        amount: 444000,
         category: 'Shopping',
         date: new Date('2024-11-28'),
         notes: 'New shoes',
@@ -78,7 +78,7 @@ export const mockExpenses: Expense[] = [
         id: '3',
         userId: 'user1',
         accountId: '3',
-        amount: 85.00,
+        amount: 315000,
         category: 'Bills & Utilities',
         date: new Date('2024-11-27'),
         notes: 'Internet bill',
@@ -88,7 +88,7 @@ export const mockExpenses: Expense[] = [
         id: '4',
         userId: 'user1',
         accountId: '1',
-        amount: 32.75,
+        amount: 121000,
         category: 'Transportation',
         date: new Date('2024-11-27'),
         notes: 'Gas station',
@@ -98,7 +98,7 @@ export const mockExpenses: Expense[] = [
         id: '5',
         userId: 'user1',
         accountId: '4',
-        amount: 15.00,
+        amount: 55000,
         category: 'Food & Dining',
         date: new Date('2024-11-26'),
         notes: 'Coffee shop',
@@ -108,7 +108,7 @@ export const mockExpenses: Expense[] = [
         id: '6',
         userId: 'user1',
         accountId: '1',
-        amount: 250.00,
+        amount: 925000,
         category: 'Healthcare',
         date: new Date('2024-11-25'),
         notes: 'Doctor visit',
@@ -118,7 +118,7 @@ export const mockExpenses: Expense[] = [
         id: '7',
         userId: 'user1',
         accountId: '1',
-        amount: 65.00,
+        amount: 240000,
         category: 'Entertainment',
         date: new Date('2024-11-24'),
         notes: 'Movie tickets and snacks',
@@ -128,7 +128,7 @@ export const mockExpenses: Expense[] = [
         id: '8',
         userId: 'user1',
         accountId: '1',
-        amount: 180.00,
+        amount: 666000,
         category: 'Food & Dining',
         date: new Date('2024-11-23'),
         notes: 'Grocery shopping',
@@ -138,7 +138,7 @@ export const mockExpenses: Expense[] = [
         id: '9',
         userId: 'user1',
         accountId: '3',
-        amount: 45.00,
+        amount: 166000,
         category: 'Transportation',
         date: new Date('2024-11-22'),
         notes: 'Uber rides',
@@ -148,7 +148,7 @@ export const mockExpenses: Expense[] = [
         id: '10',
         userId: 'user1',
         accountId: '1',
-        amount: 95.00,
+        amount: 351000,
         category: 'Shopping',
         date: new Date('2024-11-21'),
         notes: 'Clothing',
@@ -200,3 +200,40 @@ export const getCategorySpending = () => {
         };
     });
 };
+
+// Helper function to add a new transaction
+export const addTransaction = (
+    amount: number,
+    categoryId: string,
+    accountId: string,
+    date: Date,
+    notes: string,
+    type: 'expense' | 'income' = 'expense'
+): void => {
+    const category = mockCategories.find(c => c.id === categoryId);
+
+    const newExpense: Expense = {
+        id: `${Date.now()}`,
+        userId: 'user1',
+        accountId,
+        amount,
+        category: category?.name || 'Other',
+        date,
+        notes,
+        createdAt: new Date(),
+        type,
+    };
+
+    mockExpenses.unshift(newExpense);
+
+    // Update account balance
+    const account = mockAccounts.find(acc => acc.id === accountId);
+    if (account) {
+        if (type === 'expense') {
+            account.balance -= amount;
+        } else {
+            account.balance += amount;
+        }
+    }
+};
+

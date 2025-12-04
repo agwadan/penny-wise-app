@@ -17,10 +17,10 @@ export function RecentExpensesList({ expenses, onViewAll }: RecentExpensesListPr
     const colors = Colors[colorScheme ?? 'light'];
 
     const formatCurrency = (amount: number) => {
-        return new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-        }).format(amount);
+        return `UGX ${amount.toLocaleString('en-US', {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
+        })}`;
     };
 
     const formatDate = (date: Date) => {

@@ -12,6 +12,7 @@ import {
   mockAccounts
 } from '@/data/mock-data';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { router } from 'expo-router';
 import React from 'react';
 import { RefreshControl, ScrollView, StyleSheet } from 'react-native';
 
@@ -33,13 +34,11 @@ export default function DashboardScreen() {
   }, []);
 
   const handleAddExpense = () => {
-    // TODO: Navigate to add expense screen
-    console.log('Add expense');
+    router.push('/modal');
   };
 
   const handleAddIncome = () => {
-    // TODO: Navigate to add income screen
-    console.log('Add income');
+    router.push('/modal');
   };
 
   const handleViewTransactions = () => {
@@ -71,7 +70,7 @@ export default function DashboardScreen() {
           />
         }
       >
-        {/* Header */}
+        {/* ==== Header ==== */}
         <ThemedView style={styles.header}>
           <ThemedText style={styles.greeting}>Welcome back! 👋</ThemedText>
           <ThemedText style={[styles.subtitle, { color: colors.textSecondary }]}>
@@ -79,13 +78,13 @@ export default function DashboardScreen() {
           </ThemedText>
         </ThemedView>
 
-        {/* Account Summary */}
+        {/* ==== Account Summary ====  */}
         <AccountSummaryCard
           totalBalance={totalBalance}
           accountCount={mockAccounts.length}
         />
 
-        {/* Quick Actions */}
+        {/* ==== Quick Actions ==== */}
         <QuickActions
           onAddExpense={handleAddExpense}
           onAddIncome={handleAddIncome}
@@ -93,10 +92,10 @@ export default function DashboardScreen() {
           onManageAccounts={handleManageAccounts}
         />
 
-        {/* Category Spending Chart */}
+        {/* ==== Category Spending Chart ==== */}
         <CategoryChart data={categorySpending} />
 
-        {/* Recent Expenses */}
+        {/* ==== Recent Expenses ==== */}
         <RecentExpensesList
           expenses={recentExpenses}
           onViewAll={handleViewAllExpenses}

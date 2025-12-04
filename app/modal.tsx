@@ -1,18 +1,23 @@
-import { Link } from 'expo-router';
+import { AddTransactionModal } from '@/components/modals/add-transaction-modal';
+import { addTransaction } from '@/data/mock-data';
+import { TransactionFormData } from '@/types';
 import { StyleSheet } from 'react-native';
 
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-
 export default function ModalScreen() {
-  return (
-    <ThemedView style={styles.container}>
-      <ThemedText type="title">This is a modal</ThemedText>
-      <Link href="/" dismissTo style={styles.link}>
-        <ThemedText type="link">Go to home screen</ThemedText>
-      </Link>
-    </ThemedView>
-  );
+  const handleSubmit = (data: TransactionFormData) => {
+    const amount = parseFloat(data.amount);
+
+    addTransaction(
+      amount,
+      data.categoryId,
+      data.accountId,
+      data.date,
+      data.notes,
+      data.type
+    );
+  };
+
+  return <AddTransactionModal onSubmit={handleSubmit} />;
 }
 
 const styles = StyleSheet.create({
