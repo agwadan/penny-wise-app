@@ -23,20 +23,9 @@ export interface Category {
     isDefault: boolean;
 }
 
-export interface Expense {
-    id: string;
-    userId: string;
-    accountId: string;
-    amount: number;
-    category: string;
-    date: Date;
-    notes?: string;
-    createdAt: Date;
-}
-
 export type TransactionType = 'expense' | 'income';
 
-export interface Expense {
+export interface Transaction {
     id: string;
     userId: string;
     accountId: string;
@@ -45,8 +34,10 @@ export interface Expense {
     date: Date;
     notes?: string;
     createdAt: Date;
-    type?: TransactionType; // Optional for backward compatibility with existing data
+    type?: TransactionType;
 }
+
+export type Expense = Transaction;
 
 export interface CategorySpending {
     category: string;

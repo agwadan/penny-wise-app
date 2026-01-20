@@ -1,13 +1,12 @@
 import { AccountSummaryCard } from '@/components/dashboard/account-summary-card';
 import { CategoryChart } from '@/components/dashboard/category-chart';
 import { QuickActions } from '@/components/dashboard/quick-actions';
-import { RecentExpensesList } from '@/components/dashboard/recent-expenses-list';
+import { RecentTransactionsList } from '@/components/dashboard/recent-transactions-list';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Colors } from '@/constants/theme';
 import {
   getCategorySpending,
-  getRecentExpenses,
   getTotalBalance,
   mockAccounts
 } from '@/data/mock-data';
@@ -22,7 +21,6 @@ export default function DashboardScreen() {
   const [refreshing, setRefreshing] = React.useState(false);
 
   const totalBalance = getTotalBalance();
-  const recentExpenses = getRecentExpenses(6);
   const categorySpending = getCategorySpending();
 
   const onRefresh = React.useCallback(() => {
@@ -95,9 +93,8 @@ export default function DashboardScreen() {
         {/* ==== Category Spending Chart ==== */}
         <CategoryChart data={categorySpending} />
 
-        {/* ==== Recent Expenses ==== */}
-        <RecentExpensesList
-          expenses={recentExpenses}
+        {/* ==== Recent Transactions ==== */}
+        <RecentTransactionsList
           onViewAll={handleViewAllExpenses}
         />
       </ScrollView>
@@ -117,7 +114,7 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingHorizontal: 16,
-    paddingTop: 16,
+    paddingTop: 40,
     paddingBottom: 8,
   },
   greeting: {

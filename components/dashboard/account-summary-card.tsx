@@ -42,6 +42,8 @@ export function AccountSummaryCard({
         >
             <View style={styles.content}>
                 <ThemedText style={styles.label}>Total Balance</ThemedText>
+
+                {/* ==== Total Balance Figure ===== */}
                 <ThemedText style={styles.balance}>
                     {formatCurrency(totalBalance)}
                 </ThemedText>
@@ -76,10 +78,10 @@ const styles = StyleSheet.create({
         marginBottom: 8,
     },
     balance: {
-        fontSize: 42,
+        fontSize: 28,
         fontWeight: 'bold',
         color: '#FFFFFF',
-        marginBottom: 8,
+        paddingBottom: 8,
     },
     accountCount: {
         fontSize: 14,
