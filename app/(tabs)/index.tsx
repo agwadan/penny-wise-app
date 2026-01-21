@@ -1,20 +1,20 @@
 import { AccountSummaryCard } from '@/components/dashboard/account-summary-card';
 import { CategoryChart } from '@/components/dashboard/category-chart';
 import { QuickActions } from '@/components/dashboard/quick-actions';
-import { RecentExpensesList } from '@/components/dashboard/recent-expenses-list';
+import { RecentTransactionsList } from '@/components/dashboard/recent-transactions-list';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Colors } from '@/constants/theme';
 import {
   getCategorySpending,
-  getRecentExpenses,
   getTotalBalance,
   mockAccounts
 } from '@/data/mock-data';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React from 'react';
-import { RefreshControl, ScrollView, StyleSheet } from 'react-native';
+import { Alert, RefreshControl, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 export default function DashboardScreen() {
   const colorScheme = useColorScheme();
@@ -22,7 +22,6 @@ export default function DashboardScreen() {
   const [refreshing, setRefreshing] = React.useState(false);
 
   const totalBalance = getTotalBalance();
-  const recentExpenses = getRecentExpenses(6);
   const categorySpending = getCategorySpending();
 
   const onRefresh = React.useCallback(() => {
@@ -32,6 +31,23 @@ export default function DashboardScreen() {
       setRefreshing(false);
     }, 1000);
   }, []);
+
+  const handleLogout = () => {
+    Alert.alert('Logout', 'Are you sure you want to log out?', [
+      {
+        text: 'Cancel',
+        style: 'cancel',
+      },
+      {
+        text: 'Logout',
+        style: 'destructive',
+        onPress: () => {
+          // TODO: Clear auth tokens
+          router.replace('/login');
+        },
+      },
+    ]);
+  };
 
   const handleAddExpense = () => {
     router.push('/modal');
@@ -72,10 +88,15 @@ export default function DashboardScreen() {
       >
         {/* ==== Header ==== */}
         <ThemedView style={styles.header}>
-          <ThemedText style={styles.greeting}>Welcome back! 👋</ThemedText>
-          <ThemedText style={[styles.subtitle, { color: colors.textSecondary }]}>
-            Here's your financial overview
-          </ThemedText>
+          <View>
+            <ThemedText style={styles.greeting}>Welcome back! 👋</ThemedText>
+            <ThemedText style={[styles.subtitle, { color: colors.textSecondary }]}>
+              Here's your financial overview
+            </ThemedText>
+          </View>
+          <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
+            <Ionicons name="log-out-outline" size={24} color={colors.text} />
+          </TouchableOpacity>
         </ThemedView>
 
         {/* ==== Account Summary ====  */}
@@ -95,9 +116,8 @@ export default function DashboardScreen() {
         {/* ==== Category Spending Chart ==== */}
         <CategoryChart data={categorySpending} />
 
-        {/* ==== Recent Expenses ==== */}
-        <RecentExpensesList
-          expenses={recentExpenses}
+        {/* ==== Recent Transactions ==== */}
+        <RecentTransactionsList
           onViewAll={handleViewAllExpenses}
         />
       </ScrollView>
@@ -117,8 +137,16 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingHorizontal: 16,
-    paddingTop: 16,
+    paddingTop: 40,
     paddingBottom: 8,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  logoutButton: {
+    padding: 8,
+    borderRadius: 20,
+    backgroundColor: 'rgba(150, 150, 150, 0.1)',
   },
   greeting: {
     fontSize: 28,
