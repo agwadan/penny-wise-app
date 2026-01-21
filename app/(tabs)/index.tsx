@@ -11,9 +11,10 @@ import {
   mockAccounts
 } from '@/data/mock-data';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React from 'react';
-import { RefreshControl, ScrollView, StyleSheet } from 'react-native';
+import { Alert, RefreshControl, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 export default function DashboardScreen() {
   const colorScheme = useColorScheme();
@@ -30,6 +31,23 @@ export default function DashboardScreen() {
       setRefreshing(false);
     }, 1000);
   }, []);
+
+  const handleLogout = () => {
+    Alert.alert('Logout', 'Are you sure you want to log out?', [
+      {
+        text: 'Cancel',
+        style: 'cancel',
+      },
+      {
+        text: 'Logout',
+        style: 'destructive',
+        onPress: () => {
+          // TODO: Clear auth tokens
+          router.replace('/login');
+        },
+      },
+    ]);
+  };
 
   const handleAddExpense = () => {
     router.push('/modal');
@@ -70,10 +88,15 @@ export default function DashboardScreen() {
       >
         {/* ==== Header ==== */}
         <ThemedView style={styles.header}>
-          <ThemedText style={styles.greeting}>Welcome back! 👋</ThemedText>
-          <ThemedText style={[styles.subtitle, { color: colors.textSecondary }]}>
-            Here's your financial overview
-          </ThemedText>
+          <View>
+            <ThemedText style={styles.greeting}>Welcome back! 👋</ThemedText>
+            <ThemedText style={[styles.subtitle, { color: colors.textSecondary }]}>
+              Here's your financial overview
+            </ThemedText>
+          </View>
+          <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
+            <Ionicons name="log-out-outline" size={24} color={colors.text} />
+          </TouchableOpacity>
         </ThemedView>
 
         {/* ==== Account Summary ====  */}
@@ -116,6 +139,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingTop: 40,
     paddingBottom: 8,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  logoutButton: {
+    padding: 8,
+    borderRadius: 20,
+    backgroundColor: 'rgba(150, 150, 150, 0.1)',
   },
   greeting: {
     fontSize: 28,
