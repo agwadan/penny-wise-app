@@ -1,20 +1,40 @@
 import { AddTransactionModal } from '@/components/modals/add-transaction-modal';
-import { addTransaction } from '@/data/mock-data';
 import { TransactionFormData } from '@/types';
-import { StyleSheet } from 'react-native';
+import { addTransaction, handleApiError } from '@/utils/api';
+import { Alert, StyleSheet } from 'react-native';
 
 export default function ModalScreen() {
-  const handleSubmit = (data: TransactionFormData) => {
-    const amount = parseFloat(data.amount);
+  const handleSubmit = async (data: TransactionFormData) => {
+    try {
+      // Format date as YYYY-MM-DD
+      const date = new Date(data.date);
+      const formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 
-    addTransaction(
-      amount,
-      data.categoryId,
-      data.accountId,
-      data.date,
-      data.notes,
-      data.type
-    );
+      // Convert IDs to numbers
+      const accountId = parseInt(data.accountId, 10);
+      const categoryId = parseInt(data.categoryId, 10);
+
+      if (isNaN(accountId) || isNaN(categoryId)) {
+        Alert.alert('Error', 'Invalid account or category ID');
+        return;
+      }
+
+      // Prepare request body matching the API endpoint format
+      const requestData = {
+        account: accountId,
+        category: categoryId,
+        transaction_type: data.type,
+        amount: data.amount,
+        description: data.notes || '',
+        date: formattedDate,
+      };
+
+      await addTransaction(requestData);
+      Alert.alert('Success', 'Transaction added successfully');
+    } catch (error) {
+      const errorMessage = handleApiError(error);
+      Alert.alert('Error', errorMessage);
+    }
   };
 
   return <AddTransactionModal onSubmit={handleSubmit} />;

@@ -4,7 +4,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { API_ENDPOINTS, handleApiError, postData, validateLoginData } from '@/utils';
+import { API_ENDPOINTS, handleApiError, postData, saveAuthData, validateLoginData } from '@/utils';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
@@ -22,6 +22,7 @@ export default function LoginScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
 
+  /* ==== Form data and errors ==== */
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -34,12 +35,14 @@ export default function LoginScreen() {
 
   const [loading, setLoading] = useState(false);
 
+  /* ==== Form validation ==== */
   const validateForm = () => {
     const { isValid, errors: newErrors } = validateLoginData(formData);
     setErrors(newErrors as typeof errors);
     return isValid;
   };
 
+  /* ==== Function to handle login ==== */
   const handleLogin = async () => {
     if (!validateForm()) {
       return;
@@ -53,8 +56,13 @@ export default function LoginScreen() {
         password: formData.password,
       });
 
-      console.log('Login successful:', response);
-      // TODO: Store token using expo-secure-store if needed
+      
+
+      // Store auth data securely
+      if (response.access && response.refresh && response.user) {
+        await saveAuthData(response.access, response.refresh, response.user);
+      }
+
       router.replace('/(tabs)');
     } catch (error) {
       const errorMessage = handleApiError(error);
@@ -64,10 +72,12 @@ export default function LoginScreen() {
     }
   };
 
+  /* ==== Function to handle signup navigation ==== */
   const handleSignupNavigation = () => {
     router.push('/signup');
   };
 
+  /* ==== Function to handle forgot password ==== */
   const handleForgotPassword = () => {
     // TODO: Navigate to forgot password screen
     console.log('Forgot password');

@@ -11,6 +11,7 @@ import {
   mockAccounts
 } from '@/data/mock-data';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { clearAuthData } from '@/utils';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React from 'react';
@@ -41,8 +42,8 @@ export default function DashboardScreen() {
       {
         text: 'Logout',
         style: 'destructive',
-        onPress: () => {
-          // TODO: Clear auth tokens
+        onPress: async () => {
+          await clearAuthData();
           router.replace('/login');
         },
       },

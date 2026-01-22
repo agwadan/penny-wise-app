@@ -59,6 +59,7 @@ export function AddTransactionModal({ onSubmit }: AddTransactionModalProps) {
     };
 
     const handleSubmit = () => {
+        
         if (validateForm()) {
             onSubmit(formData);
             router.back();
@@ -82,7 +83,12 @@ export function AddTransactionModal({ onSubmit }: AddTransactionModalProps) {
                     <Text style={[styles.headerButtonText, { color: colors.textSecondary }]}>Cancel</Text>
                 </Pressable>
                 <Text style={[styles.headerTitle, { color: colors.text }]}>Add Transaction</Text>
-                <Pressable onPress={handleSubmit} style={styles.headerButton}>
+                <Pressable 
+                    onPress={() => {
+                        handleSubmit();
+                    }} 
+                    style={styles.headerButton}
+                >
                     <Text style={[styles.headerButtonText, { color: colors.primary }]}>Save</Text>
                 </Pressable>
             </View>
@@ -131,7 +137,10 @@ export function AddTransactionModal({ onSubmit }: AddTransactionModalProps) {
                         styles.submitButton,
                         { backgroundColor: formData.type === 'expense' ? colors.error : colors.success },
                     ]}
-                    onPress={handleSubmit}
+                    onPress={() => {
+                        console.log('Button pressed!');
+                        handleSubmit();
+                    }}
                 >
                     <Text style={styles.submitButtonText}>
                         {formData.type === 'expense' ? '💸 Add Expense' : '💰 Add Income'}
