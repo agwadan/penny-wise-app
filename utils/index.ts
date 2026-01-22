@@ -30,5 +30,6 @@ export const postData = async (endpoint: string, data: any) => {
 
 // Export API utilities for authentication and other features
 export * from './api';
+export * from './storage';
 export * from './validation';
 

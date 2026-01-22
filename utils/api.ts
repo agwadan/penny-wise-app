@@ -1,3 +1,4 @@
+import { getAccessToken } from '@/utils/storage';
 import axios from 'axios';
 import Constants from 'expo-constants';
 
@@ -29,11 +30,10 @@ export const apiClient = axios.create({
 // Request interceptor to add auth token
 apiClient.interceptors.request.use(
   async (config) => {
-    // TODO: Get token from secure storage (e.g., expo-secure-store)
-    // const token = await SecureStore.getItemAsync('access_token');
-    // if (token) {
-    //   config.headers.Authorization = `Bearer ${token}`;
-    // }
+    const token = await getAccessToken();
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
   },
   (error) => {
@@ -77,7 +77,7 @@ apiClient.interceptors.response.use(
  */
 export const API_ENDPOINTS = {
   // Authentication
-  LOGIN: '/auth/login/',
+  LOGIN: 'auth/login/',
   REGISTER: 'auth/register/',
   LOGOUT: '/auth/logout/',
   TOKEN_REFRESH: '/auth/token/refresh/',
@@ -91,6 +91,7 @@ export const API_ENDPOINTS = {
   // Transactions
   TRANSACTIONS: '/transactions/',
   TRANSACTION_DETAIL: (id: number) => `/transactions/${id}/`,
+  ADD_TRANSACTION: '/auth/add-transaction/',
 
   // Accounts
   ACCOUNTS: '/accounts/',
@@ -130,5 +131,26 @@ export const handleApiError = (error: any): string => {
   } else {
     // Something else happened
     return error.message || 'An unexpected error occurred.';
+  }
+};
+
+/**
+ * Add a new transaction
+ */
+export interface AddTransactionRequest {
+  account: number;
+  category: number;
+  transaction_type: 'expense' | 'income';
+  amount: string;
+  description: string;
+  date: string; // Format: YYYY-MM-DD
+}
+
+export const addTransaction = async (data: AddTransactionRequest) => {
+  try {
+    const response = await apiClient.post(API_ENDPOINTS.ADD_TRANSACTION, data);
+    return response.data;
+  } catch (error) {
+    throw error;
   }
 };
