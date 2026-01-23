@@ -30,7 +30,7 @@ export function AddTransactionModal({ onSubmit }: AddTransactionModalProps) {
 
     const [formData, setFormData] = React.useState<TransactionFormData>({
         type: 'expense',
-        amount: '',
+        amount: 0,
         categoryId: '',
         accountId: '',
         date: new Date(),
@@ -42,7 +42,7 @@ export function AddTransactionModal({ onSubmit }: AddTransactionModalProps) {
     const validateForm = (): boolean => {
         const newErrors: Partial<Record<keyof TransactionFormData, string>> = {};
 
-        if (!formData.amount || parseFloat(formData.amount) <= 0) {
+        if (!formData.amount || formData.amount <= 0) {
             newErrors.amount = 'Please enter a valid amount';
         }
 
@@ -59,6 +59,9 @@ export function AddTransactionModal({ onSubmit }: AddTransactionModalProps) {
     };
 
     const handleSubmit = () => {
+
+        console.log(`formData: ${JSON.stringify(formData)}`);
+
         if (validateForm()) {
             onSubmit(formData);
             router.back();

@@ -48,7 +48,7 @@ export interface CategorySpending {
 
 export interface TransactionFormData {
     type: TransactionType;
-    amount: string;
+    amount: number;
     categoryId: string;
     accountId: string;
     date: Date;
@@ -58,6 +58,6 @@ export interface TransactionFormData {
 export interface AccountFormData {
     name: string;
     account_type: string;
-    balance: string;
+    balance: number;
     currency: string;
 }
