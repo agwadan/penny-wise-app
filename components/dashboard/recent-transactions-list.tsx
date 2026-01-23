@@ -4,7 +4,7 @@ import { Colors } from '@/constants/theme';
 import { mockCategories } from '@/data/mock-data';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Transaction } from '@/types';
-import { fetchData, getUserInfo } from '@/utils';
+import { fetchData } from '@/utils';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 
@@ -21,11 +21,10 @@ export function RecentTransactionsList({ onViewAll }: RecentTransactionsListProp
     useEffect(() => {
         const loadTransactions = async () => {
             try {
-                const user = await getUserInfo();
-                const endpoint = user?.id ? `transactions?user=${user.id}` : 'transactions';
+                const endpoint = 'auth/transactions/';
                 const data = await fetchData(endpoint);
                 console.log('Data from server (raw):', data);
-                setTransactions(data.results)
+                setTransactions(data.results || data);
             } catch (error) {
                 console.error('Failed to load transactions:', error);
             } finally {
