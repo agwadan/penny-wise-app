@@ -55,7 +55,7 @@ export function AddAccountModal({ onSubmit }: AddAccountModalProps) {
   const [formData, setFormData] = React.useState<AccountFormData>({
     name: '',
     account_type: 'savings',
-    balance: '',
+    balance: 0,
     currency: 'KES',
   });
 
@@ -98,7 +98,7 @@ export function AddAccountModal({ onSubmit }: AddAccountModalProps) {
       newErrors.name = 'Please enter an account name';
     }
 
-    if (!formData.balance) {
+    if (!formData.balance || formData.balance <= 0) {
       newErrors.balance = 'Please enter an initial balance';
     }
 
@@ -108,13 +108,7 @@ export function AddAccountModal({ onSubmit }: AddAccountModalProps) {
 
   const handleSubmit = () => {
     if (validateForm()) {
-      // Ensure balance is formatted as a string with 2 decimal places if it's a number
-      // but the API expects "500.00" as a string
-      const submissionData = {
-        ...formData,
-        balance: parseFloat(formData.balance).toFixed(2)
-      };
-      onSubmit(submissionData);
+      onSubmit(formData);
       router.back();
     }
   };

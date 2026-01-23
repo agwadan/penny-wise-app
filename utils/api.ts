@@ -91,7 +91,7 @@ export const API_ENDPOINTS = {
   // Transactions
   TRANSACTIONS: '/transactions/',
   TRANSACTION_DETAIL: (id: number) => `/transactions/${id}/`,
-  ADD_TRANSACTION: '/auth/add-transaction/',
+  ADD_TRANSACTION: 'transactions/',
 
   // Accounts
   ACCOUNTS: '/accounts/',
@@ -143,7 +143,7 @@ export interface AddTransactionRequest {
   account: number;
   category: number;
   transaction_type: 'expense' | 'income';
-  amount: string;
+  amount: number;
   description: string;
   date: string; // Format: YYYY-MM-DD
 }
@@ -163,7 +163,7 @@ export const addTransaction = async (data: AddTransactionRequest) => {
 export interface AddAccountRequest {
   name: string;
   account_type: string;
-  balance: string;
+  balance: number;
   currency: string;
 }
 

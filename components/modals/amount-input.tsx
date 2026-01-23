@@ -4,8 +4,8 @@ import React from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 
 interface AmountInputProps {
-    value: string;
-    onChange: (value: string) => void;
+    value: number;
+    onChange: (value: number) => void;
     error?: string;
     currency?: string;
 }
@@ -22,11 +22,12 @@ export function AmountInput({ value, onChange, error, currency = 'UGX' }: Amount
         UGX: 'UGX',
     };
 
-    const formatWithSeparators = (val: string) => {
-        if (!val) return '';
-        const [integer, decimal] = val.split('.');
+    const formatWithSeparators = (val: number | string) => {
+        const stringVal = val.toString();
+        if (!stringVal || stringVal === '0') return '';
+        const [integer, decimal] = stringVal.split('.');
         const formattedInteger = integer.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-        return val.includes('.') ? `${formattedInteger}.${decimal}` : formattedInteger;
+        return stringVal.includes('.') ? `${formattedInteger}.${decimal}` : formattedInteger;
     };
 
     const handleChange = (text: string) => {
@@ -47,7 +48,8 @@ export function AmountInput({ value, onChange, error, currency = 'UGX' }: Amount
             return;
         }
 
-        onChange(cleaned);
+        const numericValue = cleaned === '' ? 0 : parseFloat(cleaned);
+        onChange(numericValue);
     };
 
     return (
