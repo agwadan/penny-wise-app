@@ -54,3 +54,10 @@ export interface TransactionFormData {
     date: Date;
     notes: string;
 }
+
+export interface AccountFormData {
+    name: string;
+    account_type: string;
+    balance: string;
+    currency: string;
+}

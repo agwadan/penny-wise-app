@@ -1,23 +1,48 @@
 import { ThemedText } from '@/components/themed-text';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { getTotalBalance } from '@/utils';
 import { LinearGradient } from 'expo-linear-gradient';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 interface AccountSummaryCardProps {
-    totalBalance: number;
-    accountCount: number;
+    refreshTrigger?: boolean;
     currency?: string;
 }
 
 export function AccountSummaryCard({
-    totalBalance,
-    accountCount,
+    refreshTrigger = false,
     currency = 'UGX'
 }: AccountSummaryCardProps) {
     const colorScheme = useColorScheme();
     const colors = Colors[colorScheme ?? 'light'];
+    const [totalBalance, setTotalBalance] = useState<number>(0);
+    const [accountCount, setAccountCount] = useState<number>(0);
+    const [loading, setLoading] = useState(true);
+
+    const fetchData = async () => {
+        try {
+            setLoading(true);
+            const data = await getTotalBalance();
+            // Assuming the API returns { total_balance: number, count?: number }
+            setTotalBalance(data.total_balance || 0);
+            if (data.count !== undefined) {
+                setAccountCount(data.count);
+            } else {
+                // Fallback or fetch accounts separately if needed, but let's assume it's there
+                // For now, if count is missing, we'll just not show it or show 0
+            }
+        } catch (error) {
+            console.error('Error fetching account summary:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchData();
+    }, [refreshTrigger]);
 
     const formatCurrency = (amount: number) => {
         const currencySymbols: Record<string, string> = {

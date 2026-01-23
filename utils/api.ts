@@ -96,6 +96,8 @@ export const API_ENDPOINTS = {
   // Accounts
   ACCOUNTS: '/accounts/',
   ACCOUNT_DETAIL: (id: number) => `/accounts/${id}/`,
+  TOTAL_BALANCE: '/accounts/total_balance/',
+  FINANCE_ACCOUNTS: '/accounts/',
 
   // Categories
   CATEGORIES: '/categories/',
@@ -134,9 +136,9 @@ export const handleApiError = (error: any): string => {
   }
 };
 
-/**
- * Add a new transaction
- */
+/**-----------------------------------| 
+        Add a new transaction           |
+ -----------------------------------*/
 export interface AddTransactionRequest {
   account: number;
   category: number;
@@ -149,6 +151,70 @@ export interface AddTransactionRequest {
 export const addTransaction = async (data: AddTransactionRequest) => {
   try {
     const response = await apiClient.post(API_ENDPOINTS.ADD_TRANSACTION, data);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+/**-----------------------------------| 
+        Add a new account             |
+ ----------------------------------*/
+export interface AddAccountRequest {
+  name: string;
+  account_type: string;
+  balance: string;
+  currency: string;
+}
+
+export const addAccount = async (data: AddAccountRequest) => {
+  try {
+    const response = await apiClient.post(API_ENDPOINTS.ACCOUNTS, data);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getTotalBalance = async () => {
+  try {
+    const response = await apiClient.get(API_ENDPOINTS.TOTAL_BALANCE);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getAccounts = async () => {
+  try {
+    const response = await apiClient.get(API_ENDPOINTS.ACCOUNTS);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getAccountMetadata = async () => {
+  try {
+    const response = await apiClient.options(API_ENDPOINTS.ACCOUNTS);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getCategories = async () => {
+  try {
+    const response = await apiClient.get(API_ENDPOINTS.CATEGORIES);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getCategorySpending = async () => {
+  try {
+    const response = await apiClient.get(API_ENDPOINTS.CATEGORY_SPENDING);
     return response.data;
   } catch (error) {
     throw error;
