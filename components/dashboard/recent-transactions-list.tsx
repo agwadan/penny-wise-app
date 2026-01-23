@@ -1,39 +1,46 @@
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Colors } from '@/constants/theme';
-import { mockCategories } from '@/data/mock-data';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Transaction } from '@/types';
-import { fetchData } from '@/utils';
+import { fetchData, getCategories } from '@/utils';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 interface RecentTransactionsListProps {
     onViewAll?: () => void;
+    refreshTrigger?: boolean;
 }
 
-export function RecentTransactionsList({ onViewAll }: RecentTransactionsListProps) {
+export function RecentTransactionsList({ onViewAll, refreshTrigger = false }: RecentTransactionsListProps) {
     const [transactions, setTransactions] = useState<Transaction[]>([]);
+    const [categories, setCategories] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const colorScheme = useColorScheme();
     const colors = Colors[colorScheme ?? 'light'];
 
     useEffect(() => {
-        const loadTransactions = async () => {
+        const loadData = async () => {
             try {
-                const endpoint = 'auth/transactions/';
-                const data = await fetchData(endpoint);
-                console.log('Data from server (raw):', data);
-                setTransactions(data.results || data);
+                // Keep loading state if it's the first load
+                if (transactions.length === 0) setIsLoading(true);
+
+                const [transactionsData, categoriesData] = await Promise.all([
+                    fetchData('auth/transactions/'),
+                    getCategories()
+                ]);
+
+                setTransactions(transactionsData.results || transactionsData);
+                setCategories(categoriesData.results || categoriesData);
             } catch (error) {
-                console.error('Failed to load transactions:', error);
+                console.error('Failed to load dashboard data:', error);
             } finally {
                 setIsLoading(false);
             }
         };
 
-        loadTransactions();
-    }, []);
+        loadData();
+    }, [refreshTrigger]);
 
     const formatCurrency = (amount: number) => {
         return `UGX ${amount.toLocaleString('en-US', {
@@ -56,12 +63,12 @@ export function RecentTransactionsList({ onViewAll }: RecentTransactionsListProp
     };
 
     const getCategoryIcon = (categoryName: string) => {
-        const category = mockCategories.find(c => c.name === categoryName);
+        const category = categories.find(c => c.name === categoryName);
         return category?.icon || '📌';
     };
 
     const getCategoryColor = (categoryName: string) => {
-        const category = mockCategories.find(c => c.name === categoryName);
+        const category = categories.find(c => c.name === categoryName);
         return category?.color || '#999999';
     };
 

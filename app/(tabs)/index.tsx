@@ -5,11 +5,6 @@ import { RecentTransactionsList } from '@/components/dashboard/recent-transactio
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Colors } from '@/constants/theme';
-import {
-  getCategorySpending,
-  getTotalBalance,
-  mockAccounts
-} from '@/data/mock-data';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { clearAuthData } from '@/utils';
 import { Ionicons } from '@expo/vector-icons';
@@ -22,15 +17,12 @@ export default function DashboardScreen() {
   const colors = Colors[colorScheme ?? 'light'];
   const [refreshing, setRefreshing] = React.useState(false);
 
-  const totalBalance = getTotalBalance();
-  const categorySpending = getCategorySpending();
-
-  const onRefresh = React.useCallback(() => {
+  const onRefresh = React.useCallback(async () => {
     setRefreshing(true);
-    // Simulate API call
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 1000);
+    // components like AccountSummaryCard and RecentTransactionsList 
+    // respond to the [refreshing] prop trigger
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    setRefreshing(false);
   }, []);
 
   const handleLogout = () => {
@@ -64,8 +56,7 @@ export default function DashboardScreen() {
   };
 
   const handleManageAccounts = () => {
-    // TODO: Navigate to accounts screen
-    console.log('Manage accounts');
+    router.push('/accounts');
   };
 
   const handleViewAllExpenses = () => {
@@ -102,8 +93,7 @@ export default function DashboardScreen() {
 
         {/* ==== Account Summary ====  */}
         <AccountSummaryCard
-          totalBalance={totalBalance}
-          accountCount={mockAccounts.length}
+          refreshTrigger={refreshing}
         />
 
         {/* ==== Quick Actions ==== */}
@@ -115,11 +105,12 @@ export default function DashboardScreen() {
         />
 
         {/* ==== Category Spending Chart ==== */}
-        <CategoryChart data={categorySpending} />
+        <CategoryChart refreshTrigger={refreshing} />
 
         {/* ==== Recent Transactions ==== */}
         <RecentTransactionsList
           onViewAll={handleViewAllExpenses}
+          refreshTrigger={refreshing}
         />
       </ScrollView>
     </ThemedView>

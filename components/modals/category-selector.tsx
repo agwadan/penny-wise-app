@@ -1,8 +1,8 @@
 import { Colors } from '@/constants/theme';
-import { mockCategories } from '@/data/mock-data';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import React from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { getCategories } from '@/utils/api';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 interface CategorySelectorProps {
     value: string;
@@ -13,6 +13,24 @@ interface CategorySelectorProps {
 export function CategorySelector({ value, onChange, error }: CategorySelectorProps) {
     const colorScheme = useColorScheme();
     const colors = Colors[colorScheme ?? 'light'];
+    const [categories, setCategories] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const data = await getCategories();
+                // Handing both { results: [] } and []
+                setCategories(data.results || data);
+            } catch (error) {
+                console.error('Failed to fetch categories:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchCategories();
+    }, []);
 
     return (
         <View style={styles.container}>
@@ -22,33 +40,37 @@ export function CategorySelector({ value, onChange, error }: CategorySelectorPro
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={styles.scrollContent}
             >
-                {mockCategories.map((category) => {
-                    const isSelected = value === category.id;
-                    return (
-                        <Pressable
-                            key={category.id}
-                            style={[
-                                styles.categoryItem,
-                                {
-                                    backgroundColor: isSelected ? category.color : colors.cardBackground,
-                                    borderColor: isSelected ? category.color : colors.cardBorder,
-                                },
-                            ]}
-                            onPress={() => onChange(category.id)}
-                        >
-                            <Text style={styles.categoryIcon}>{category.icon}</Text>
-                            <Text
+                {isLoading ? (
+                    <ActivityIndicator size="small" color={colors.primary} style={{ marginHorizontal: 20 }} />
+                ) : (
+                    categories.map((category) => {
+                        const isSelected = value === category.id.toString();
+                        return (
+                            <Pressable
+                                key={category.id}
                                 style={[
-                                    styles.categoryName,
-                                    { color: isSelected ? '#FFFFFF' : colors.text },
+                                    styles.categoryItem,
+                                    {
+                                        backgroundColor: isSelected ? (category.color || colors.primary) : colors.cardBackground,
+                                        borderColor: isSelected ? (category.color || colors.primary) : colors.cardBorder,
+                                    },
                                 ]}
-                                numberOfLines={1}
+                                onPress={() => onChange(category.id.toString())}
                             >
-                                {category.name}
-                            </Text>
-                        </Pressable>
-                    );
-                })}
+                                <Text style={styles.categoryIcon}>{category.icon || '📌'}</Text>
+                                <Text
+                                    style={[
+                                        styles.categoryName,
+                                        { color: isSelected ? '#FFFFFF' : colors.text },
+                                    ]}
+                                    numberOfLines={1}
+                                >
+                                    {category.name}
+                                </Text>
+                            </Pressable>
+                        );
+                    })
+                )}
             </ScrollView>
             {error && <Text style={[styles.error, { color: colors.error }]}>{error}</Text>}
         </View>

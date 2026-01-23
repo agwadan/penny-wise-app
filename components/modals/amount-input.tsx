@@ -22,9 +22,19 @@ export function AmountInput({ value, onChange, error, currency = 'UGX' }: Amount
         UGX: 'UGX',
     };
 
+    const formatWithSeparators = (val: string) => {
+        if (!val) return '';
+        const [integer, decimal] = val.split('.');
+        const formattedInteger = integer.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        return val.includes('.') ? `${formattedInteger}.${decimal}` : formattedInteger;
+    };
+
     const handleChange = (text: string) => {
+        // Strip commas for internal logic
+        const rawValue = text.replace(/,/g, '');
+
         // Allow only numbers and decimal point
-        const cleaned = text.replace(/[^0-9.]/g, '');
+        const cleaned = rawValue.replace(/[^0-9.]/g, '');
 
         // Ensure only one decimal point
         const parts = cleaned.split('.');
@@ -49,7 +59,7 @@ export function AmountInput({ value, onChange, error, currency = 'UGX' }: Amount
                 </Text>
                 <TextInput
                     style={[styles.input, { color: colors.text }]}
-                    value={value}
+                    value={formatWithSeparators(value)}
                     onChangeText={handleChange}
                     keyboardType="decimal-pad"
                     placeholder="0"

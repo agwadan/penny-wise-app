@@ -3,18 +3,37 @@ import { ThemedView } from '@/components/themed-view';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { CategorySpending } from '@/types';
-import React from 'react';
-import { Dimensions, StyleSheet, View } from 'react-native';
+import { getCategorySpending } from '@/utils/api';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Dimensions, StyleSheet, View } from 'react-native';
 import { PieChart } from 'react-native-chart-kit';
 
 interface CategoryChartProps {
-    data: CategorySpending[];
+    refreshTrigger?: boolean;
 }
 
-export function CategoryChart({ data }: CategoryChartProps) {
+export function CategoryChart({ refreshTrigger = false }: CategoryChartProps) {
     const colorScheme = useColorScheme();
     const colors = Colors[colorScheme ?? 'light'];
     const screenWidth = Dimensions.get('window').width;
+    const [data, setData] = useState<CategorySpending[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchSpending = async () => {
+            try {
+                if (data.length === 0) setIsLoading(true);
+                const spendingData = await getCategorySpending();
+                setData(spendingData.results || spendingData);
+            } catch (error) {
+                console.error('Failed to load category spending:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchSpending();
+    }, [refreshTrigger]);
 
     const formatCurrency = (amount: number) => {
         return new Intl.NumberFormat('en-US', {
@@ -37,6 +56,17 @@ export function CategoryChart({ data }: CategoryChartProps) {
     const chartConfig = {
         color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
     };
+
+    if (isLoading) {
+        return (
+            <ThemedView style={[styles.container, { backgroundColor: colors.cardBackground }]}>
+                <ThemedText style={styles.title}>Spending by Category</ThemedText>
+                <View style={styles.emptyContainer}>
+                    <ActivityIndicator size="small" color={colors.primary} />
+                </View>
+            </ThemedView>
+        );
+    }
 
     if (data.length === 0) {
         return (
