@@ -4,7 +4,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { API_ENDPOINTS, handleApiError, postData, validateSignupData } from '@/utils';
+import { API_ENDPOINTS, handleApiError, postData, saveAuthData, validateSignupData } from '@/utils';
 import Constants from 'expo-constants';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
@@ -69,8 +69,6 @@ export default function SignupScreen() {
         process.env.EXPO_PUBLIC_API_URL ||
         'http://localhost:8000/api';
 
-      console.log('API_URL', API_URL);
-
       const response = await postData(API_ENDPOINTS.REGISTER, {
         username: formData.username,
         email: formData.email,
@@ -80,12 +78,15 @@ export default function SignupScreen() {
         last_name: last_name,
       });
 
-      console.log('Signup response:', response);
+      /* ===== Store auth data securely if tokens are returned ===== */
+      if (response.tokens.access && response.tokens.refresh && response.user) {
+        await saveAuthData(response.tokens.access, response.tokens.refresh, response.user);
+      }
+
       Alert.alert('Success', 'Account created successfully!');
-      router.replace('/(tabs)');
+      router.replace('/');
     } catch (error) {
       const errorMessage = handleApiError(error);
-      console.log(error);
 
       Alert.alert('Signup Error', errorMessage);
     } finally {

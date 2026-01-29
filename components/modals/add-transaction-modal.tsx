@@ -162,7 +162,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         paddingHorizontal: 16,
-        paddingVertical: 16,
+        paddingVertical: 20,
+        marginTop: 20,
         borderBottomWidth: 1,
     },
     headerButton: {

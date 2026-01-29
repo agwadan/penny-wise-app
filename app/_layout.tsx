@@ -9,8 +9,7 @@ import { getAccessToken } from '@/utils/storage';
 import { ActivityIndicator, View } from 'react-native';
 
 export const unstable_settings = {
-  anchor: '(tabs)',
-  initialRouteName: '(tabs)',
+  initialRouteName: 'index',
 };
 
 export default function RootLayout() {
@@ -28,17 +27,17 @@ export default function RootLayout() {
         setIsAuthenticated(authenticated);
 
         // Routing logic
-        const inAuthGroup = segments[0] === '(tabs)' || segments[0] === 'accounts' || segments[0] === 'modal';
         const isWelcomePage = segments[0] === 'welcome';
         const isLoginPage = segments[0] === 'login';
         const isSignupPage = segments[0] === 'signup';
+        const inAuthGroup = !isWelcomePage && !isLoginPage && !isSignupPage;
 
         if (!authenticated && inAuthGroup) {
           // Redirect to welcome if not logged in and trying to access protected routes
           router.replace('/welcome');
         } else if (authenticated && (isWelcomePage || isLoginPage || isSignupPage)) {
           // Redirect to dashboard if logged in and on auth pages
-          router.replace('/(tabs)');
+          router.replace('/');
         }
       } catch (e) {
         setIsAuthenticated(false);
@@ -60,11 +59,11 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack initialRouteName={isAuthenticated ? "(tabs)" : "welcome"}>
+      <Stack initialRouteName={isAuthenticated ? "index" : "welcome"}>
         <Stack.Screen name="welcome" options={{ headerShown: false }} />
         <Stack.Screen name="login" options={{ headerShown: false }} />
         <Stack.Screen name="signup" options={{ headerShown: false }} />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="accounts" options={{ headerShown: false }} />
         <Stack.Screen
           name="add-account"

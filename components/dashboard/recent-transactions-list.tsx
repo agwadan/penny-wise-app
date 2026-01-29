@@ -1,3 +1,4 @@
+import { CategoryIcon } from '@/components/category-icon';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Colors } from '@/constants/theme';
@@ -30,6 +31,8 @@ export function RecentTransactionsList({ onViewAll, refreshTrigger = false }: Re
                     getCategories()
                 ]);
 
+                console.log('transactionsData', JSON.stringify(transactionsData.results, null, 2));
+                console.log('categoriesData', JSON.stringify(categoriesData.results, null, 2));
                 setTransactions(transactionsData.results || transactionsData);
                 setCategories(categoriesData.results || categoriesData);
             } catch (error) {
@@ -81,7 +84,11 @@ export function RecentTransactionsList({ onViewAll, refreshTrigger = false }: Re
             <View style={[styles.transactionItem, { borderBottomColor: colors.divider }]}>
                 <View style={styles.transactionLeft}>
                     <View style={[styles.iconContainer, { backgroundColor: getCategoryColor(item.category_name) + '20' }]}>
-                        <ThemedText style={styles.icon}>{getCategoryIcon(item.category_name)}</ThemedText>
+                        <CategoryIcon
+                            name={getCategoryIcon(item.category_name)}
+                            color={getCategoryColor(item.category_name)}
+                            size={20}
+                        />
                     </View>
                     <View style={styles.transactionDetails}>
                         <ThemedText style={styles.category}>{item.category_name}</ThemedText>

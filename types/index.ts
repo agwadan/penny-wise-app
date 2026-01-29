@@ -58,6 +58,11 @@ export interface TransactionFormData {
 export interface AccountFormData {
     name: string;
     account_type: string;
-    balance: number;
+    initial_balance: number;
     currency: string;
+}
+
+export interface BalanceHistoryItem {
+    date: string;
+    balance: number;
 }

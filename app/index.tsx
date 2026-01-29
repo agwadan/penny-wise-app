@@ -1,5 +1,5 @@
 import { AccountSummaryCard } from '@/components/dashboard/account-summary-card';
-import { CategoryChart } from '@/components/dashboard/category-chart';
+import { BalanceHistoryChart } from '@/components/dashboard/balance-history-chart';
 import { QuickActions } from '@/components/dashboard/quick-actions';
 import { RecentTransactionsList } from '@/components/dashboard/recent-transactions-list';
 import { ThemedText } from '@/components/themed-text';
@@ -104,8 +104,8 @@ export default function DashboardScreen() {
           onManageAccounts={handleManageAccounts}
         />
 
-        {/* ==== Category Spending Chart ==== */}
-        <CategoryChart refreshTrigger={refreshing} />
+        {/* ==== Balance History Chart ==== */}
+        <BalanceHistoryChart refreshTrigger={refreshing} />
 
         {/* ==== Recent Transactions ==== */}
         <RecentTransactionsList

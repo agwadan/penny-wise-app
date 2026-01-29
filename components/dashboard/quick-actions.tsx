@@ -1,3 +1,4 @@
+import { CategoryIcon } from '@/components/category-icon';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Colors } from '@/constants/theme';
@@ -43,9 +44,12 @@ export function QuickActions({
             onPress={onPress}
             activeOpacity={0.7}
         >
-            <ThemedText style={[styles.icon, isPrimary && styles.iconPrimary]}>
-                {icon}
-            </ThemedText>
+            <CategoryIcon
+                name={icon}
+                color={isPrimary ? '#FFFFFF' : colors.primary}
+                size={32}
+                containerStyle={[styles.icon, isPrimary && styles.iconPrimary]}
+            />
             <ThemedText
                 style={[
                     styles.label,
@@ -62,23 +66,23 @@ export function QuickActions({
             <ThemedText style={styles.title}>Quick Actions</ThemedText>
             <View style={styles.grid}>
                 <ActionButton
-                    icon="➕"
+                    icon="plus"
                     label="Add Expense"
                     onPress={onAddExpense}
                     isPrimary
                 />
                 <ActionButton
-                    icon="💰"
+                    icon="money"
                     label="Add Income"
                     onPress={onAddIncome}
                 />
                 <ActionButton
-                    icon="📊"
+                    icon="transactions"
                     label="Transactions"
                     onPress={onViewTransactions}
                 />
                 <ActionButton
-                    icon="🏦"
+                    icon="bank"
                     label="Accounts"
                     onPress={onManageAccounts}
                 />

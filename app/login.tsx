@@ -56,14 +56,14 @@ export default function LoginScreen() {
         password: formData.password,
       });
 
-      
+
 
       // Store auth data securely
       if (response.access && response.refresh && response.user) {
         await saveAuthData(response.access, response.refresh, response.user);
       }
 
-      router.replace('/(tabs)');
+      router.replace('/');
     } catch (error) {
       const errorMessage = handleApiError(error);
       Alert.alert('Login Error', errorMessage);
