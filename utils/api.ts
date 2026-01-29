@@ -1,3 +1,4 @@
+import { AccountFormData } from '@/types';
 import { getAccessToken } from '@/utils/storage';
 import axios from 'axios';
 import Constants from 'expo-constants';
@@ -98,6 +99,7 @@ export const API_ENDPOINTS = {
   ACCOUNT_DETAIL: (id: number) => `/accounts/${id}/`,
   TOTAL_BALANCE: '/accounts/total_balance/',
   FINANCE_ACCOUNTS: '/accounts/',
+  BALANCE_HISTORY: '/accounts/balance_history/',
 
   // Categories
   CATEGORIES: '/categories/',
@@ -160,16 +162,16 @@ export const addTransaction = async (data: AddTransactionRequest) => {
 /**-----------------------------------| 
         Add a new account             |
  ----------------------------------*/
-export interface AddAccountRequest {
-  name: string;
-  account_type: string;
-  balance: number;
-  currency: string;
-}
 
-export const addAccount = async (data: AddAccountRequest) => {
+export const addAccount = async (data: AccountFormData) => {
   try {
+    console.log(`=======> data`);
+    console.log(JSON.stringify(data, null, 2));
+
+
     const response = await apiClient.post(API_ENDPOINTS.ACCOUNTS, data);
+    console.log(`=======> response`);
+    console.log(JSON.stringify(response.data, null, 2));
     return response.data;
   } catch (error) {
     throw error;
@@ -215,6 +217,15 @@ export const getCategories = async () => {
 export const getCategorySpending = async () => {
   try {
     const response = await apiClient.get(API_ENDPOINTS.CATEGORY_SPENDING);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getBalanceHistory = async () => {
+  try {
+    const response = await apiClient.get(API_ENDPOINTS.BALANCE_HISTORY);
     return response.data;
   } catch (error) {
     throw error;

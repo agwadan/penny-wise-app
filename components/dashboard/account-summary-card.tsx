@@ -27,12 +27,7 @@ export function AccountSummaryCard({
             const data = await getTotalBalance();
             // Assuming the API returns { total_balance: number, count?: number }
             setTotalBalance(data.total_balance || 0);
-            if (data.count !== undefined) {
-                setAccountCount(data.count);
-            } else {
-                // Fallback or fetch accounts separately if needed, but let's assume it's there
-                // For now, if count is missing, we'll just not show it or show 0
-            }
+            setAccountCount(data.number_of_accounts || 0);
         } catch (error) {
             console.error('Error fetching account summary:', error);
         } finally {

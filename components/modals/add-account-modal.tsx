@@ -38,8 +38,8 @@ const getAccountIcon = (value: string) => {
 };
 
 const currencies = [
-  { label: 'KES', value: 'KES' },
   { label: 'UGX', value: 'UGX' },
+  { label: 'KES', value: 'KES' },
   { label: 'USD', value: 'USD' },
   { label: 'EUR', value: 'EUR' },
   { label: 'GBP', value: 'GBP' },
@@ -55,8 +55,8 @@ export function AddAccountModal({ onSubmit }: AddAccountModalProps) {
   const [formData, setFormData] = React.useState<AccountFormData>({
     name: '',
     account_type: 'savings',
-    balance: 0,
-    currency: 'KES',
+    initial_balance: 0,
+    currency: 'UGX',
   });
 
   useEffect(() => {
@@ -98,8 +98,8 @@ export function AddAccountModal({ onSubmit }: AddAccountModalProps) {
       newErrors.name = 'Please enter an account name';
     }
 
-    if (!formData.balance || formData.balance <= 0) {
-      newErrors.balance = 'Please enter an initial balance';
+    if (!formData.initial_balance || formData.initial_balance <= 0) {
+      newErrors.initial_balance = 'Please enter an initial balance';
     }
 
     setErrors(newErrors);
@@ -189,9 +189,9 @@ export function AddAccountModal({ onSubmit }: AddAccountModalProps) {
 
         {/* ==== Balance ==== */}
         <AmountInput
-          value={formData.balance}
-          onChange={(balance) => setFormData({ ...formData, balance })}
-          error={errors.balance}
+          value={formData.initial_balance}
+          onChange={(initial_balance) => setFormData({ ...formData, initial_balance })}
+          error={errors.initial_balance}
           currency={formData.currency}
         />
 
@@ -242,7 +242,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
-    paddingVertical: 16,
+    paddingVertical: 20,
+    marginTop: 20,
     borderBottomWidth: 1,
   },
   headerButton: {

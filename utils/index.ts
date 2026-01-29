@@ -17,8 +17,6 @@ export const fetchData = async (endpoint: string) => {
  * Perform a POST request to the specified endpoint with data
  */
 export const postData = async (endpoint: string, data: any) => {
-  console.log('endpoint', endpoint);
-  console.log('data', data);
   try {
     const response = await apiClient.post(endpoint, data);
     return response.data;
@@ -26,6 +24,20 @@ export const postData = async (endpoint: string, data: any) => {
     console.error(`Error posting to ${endpoint}:`, error);
     throw error;
   }
+};
+
+/**
+ * Formats a number to a compact string representation.
+ * e.g., 1,900,000 -> 1.9M, 300,000 -> 300k
+ */
+export const formatCompactNumber = (num: number): string => {
+  if (num >= 1000000) {
+    return parseFloat((num / 1000000).toFixed(2)) + 'M';
+  }
+  if (num >= 1000) {
+    return parseFloat((num / 1000).toFixed(0)) + 'k';
+  }
+  return num.toString();
 };
 
 // Export API utilities for authentication and other features

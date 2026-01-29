@@ -1,3 +1,4 @@
+import { CategoryIcon } from '@/components/category-icon';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { getCategories } from '@/utils/api';
@@ -57,7 +58,12 @@ export function CategorySelector({ value, onChange, error }: CategorySelectorPro
                                 ]}
                                 onPress={() => onChange(category.id.toString())}
                             >
-                                <Text style={styles.categoryIcon}>{category.icon || '📌'}</Text>
+                                <CategoryIcon
+                                    name={category.icon}
+                                    color={isSelected ? '#FFFFFF' : (category.color || colors.primary)}
+                                    size={24}
+                                    containerStyle={styles.categoryIcon}
+                                />
                                 <Text
                                     style={[
                                         styles.categoryName,
