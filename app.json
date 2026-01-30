@@ -12,6 +12,8 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.agwadan.pennywiseapp",
+      "icon": "./assets/images/pennywise-icon.png",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -43,6 +45,13 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "apiUrl": "http://35.154.15.244:8000/api/",
+      "router": {},
+      "eas": {
+        "projectId": "ee5fdbf3-79a4-4482-a89e-b6102e795534"
+      }
     }
   }
 }

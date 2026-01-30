@@ -8,10 +8,10 @@ import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { clearAuthData } from '@/utils';
 import { Ionicons } from '@expo/vector-icons';
+import Constants from 'expo-constants';
 import { router } from 'expo-router';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Alert, RefreshControl, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
-
 export default function DashboardScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
@@ -24,6 +24,10 @@ export default function DashboardScreen() {
     await new Promise(resolve => setTimeout(resolve, 1500));
     setRefreshing(false);
   }, []);
+
+  useEffect(() => {
+    console.log('BaseURl', Constants.expoConfig?.extra?.apiUrl)
+  })
 
   const handleLogout = () => {
     Alert.alert('Logout', 'Are you sure you want to log out?', [
