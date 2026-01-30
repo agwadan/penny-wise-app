@@ -14,7 +14,6 @@
     "android": {
       "package": "com.agwadan.pennywiseapp",
       "icon": "./assets/images/pennywise-icon.png",
-      "usesCleartextTraffic": true,
       "adaptiveIcon": {
         "backgroundColor": "#1A1A1A",
         "foregroundImage": "./assets/images/pennywise-icon.png"
@@ -37,6 +36,14 @@
           "backgroundColor": "#1A1A1A",
           "dark": {
             "backgroundColor": "#000000"
+          }
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true
           }
         }
       ]
