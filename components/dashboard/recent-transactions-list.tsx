@@ -5,6 +5,7 @@ import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Transaction } from '@/types';
 import { fetchData, getCategories } from '@/utils';
+import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 
@@ -30,9 +31,6 @@ export function RecentTransactionsList({ onViewAll, refreshTrigger = false }: Re
                     fetchData('auth/transactions/'),
                     getCategories()
                 ]);
-
-                console.log('transactionsData', JSON.stringify(transactionsData.results, null, 2));
-                console.log('categoriesData', JSON.stringify(categoriesData.results, null, 2));
                 setTransactions(transactionsData.results || transactionsData);
                 setCategories(categoriesData.results || categoriesData);
             } catch (error) {
@@ -81,7 +79,10 @@ export function RecentTransactionsList({ onViewAll, refreshTrigger = false }: Re
         const sign = isIncome ? '+' : '-';
 
         return (
-            <View style={[styles.transactionItem, { borderBottomColor: colors.divider }]}>
+            <TouchableOpacity
+                style={[styles.transactionItem, { borderBottomColor: colors.divider }]}
+                onPress={() => router.push({ pathname: '/edit-transaction/[id]', params: { id: item.id } })}
+            >
                 <View style={styles.transactionLeft}>
                     <View style={[styles.iconContainer, { backgroundColor: getCategoryColor(item.category_name) + '20' }]}>
                         <CategoryIcon
@@ -105,7 +106,7 @@ export function RecentTransactionsList({ onViewAll, refreshTrigger = false }: Re
                         {formatDate(item.date || item.created_at || item.timestamp || new Date())}
                     </ThemedText>
                 </View>
-            </View>
+            </TouchableOpacity>
         );
     };
 

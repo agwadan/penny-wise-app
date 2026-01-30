@@ -65,6 +65,7 @@ export default function RootLayout() {
         <Stack.Screen name="signup" options={{ headerShown: false }} />
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="accounts" options={{ headerShown: false }} />
+        <Stack.Screen name="transactions" options={{ headerShown: false }} />
         <Stack.Screen
           name="add-account"
           options={{
@@ -74,6 +75,20 @@ export default function RootLayout() {
         />
         <Stack.Screen
           name="modal"
+          options={{
+            presentation: 'modal',
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="edit-transaction/[id]"
+          options={{
+            presentation: 'modal',
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="edit-account/[id]"
           options={{
             presentation: 'modal',
             headerShown: false,

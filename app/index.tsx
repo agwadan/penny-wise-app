@@ -1,21 +1,32 @@
 import { AccountSummaryCard } from '@/components/dashboard/account-summary-card';
 import { BalanceHistoryChart } from '@/components/dashboard/balance-history-chart';
+import { CategorySpendingChart } from '@/components/dashboard/category-spending-chart';
 import { QuickActions } from '@/components/dashboard/quick-actions';
 import { RecentTransactionsList } from '@/components/dashboard/recent-transactions-list';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { clearAuthData } from '@/utils';
+import { User } from '@/types/auth';
+import { clearAuthData, getUserInfo } from '@/utils';
 import { Ionicons } from '@expo/vector-icons';
-import Constants from 'expo-constants';
 import { router } from 'expo-router';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Alert, RefreshControl, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+
 export default function DashboardScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const [refreshing, setRefreshing] = React.useState(false);
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const loadUser = async () => {
+      const userInfo = await getUserInfo();
+      setUser(userInfo);
+    };
+    loadUser();
+  }, []);
 
   const onRefresh = React.useCallback(async () => {
     setRefreshing(true);
@@ -24,10 +35,6 @@ export default function DashboardScreen() {
     await new Promise(resolve => setTimeout(resolve, 1500));
     setRefreshing(false);
   }, []);
-
-  useEffect(() => {
-    console.log('BaseURl', Constants.expoConfig?.extra?.apiUrl)
-  })
 
   const handleLogout = () => {
     Alert.alert('Logout', 'Are you sure you want to log out?', [
@@ -46,17 +53,12 @@ export default function DashboardScreen() {
     ]);
   };
 
-  const handleAddExpense = () => {
-    router.push('/modal');
-  };
-
-  const handleAddIncome = () => {
+  const handleAddTransaction = () => {
     router.push('/modal');
   };
 
   const handleViewTransactions = () => {
-    // TODO: Navigate to transactions screen
-    console.log('View transactions');
+    router.push('/transactions');
   };
 
   const handleManageAccounts = () => {
@@ -67,6 +69,8 @@ export default function DashboardScreen() {
     // TODO: Navigate to all expenses screen
     console.log('View all expenses');
   };
+
+  const displayName = user?.first_name || user?.full_name?.split(' ')[0] || user?.username || '';
 
   return (
     <ThemedView style={[styles.container, { backgroundColor: colors.background }]}>
@@ -85,7 +89,9 @@ export default function DashboardScreen() {
         {/* ==== Header ==== */}
         <ThemedView style={styles.header}>
           <View>
-            <ThemedText style={styles.greeting}>Welcome back! 👋</ThemedText>
+            <ThemedText style={styles.greeting}>
+              Hello{displayName ? `, ${displayName}` : ''}!🙂
+            </ThemedText>
             <ThemedText style={[styles.subtitle, { color: colors.textSecondary }]}>
               Here's your financial overview
             </ThemedText>
@@ -102,18 +108,21 @@ export default function DashboardScreen() {
 
         {/* ==== Quick Actions ==== */}
         <QuickActions
-          onAddExpense={handleAddExpense}
-          onAddIncome={handleAddIncome}
+          onAddTransaction={handleAddTransaction}
           onViewTransactions={handleViewTransactions}
           onManageAccounts={handleManageAccounts}
         />
 
+
         {/* ==== Balance History Chart ==== */}
         <BalanceHistoryChart refreshTrigger={refreshing} />
 
+        {/* ==== Category Spending Chart ==== */}
+        <CategorySpendingChart refreshTrigger={refreshing} />
+
         {/* ==== Recent Transactions ==== */}
         <RecentTransactionsList
-          onViewAll={handleViewAllExpenses}
+          onViewAll={handleViewTransactions}
           refreshTrigger={refreshing}
         />
       </ScrollView>
@@ -145,11 +154,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(150, 150, 150, 0.1)',
   },
   greeting: {
-    fontSize: 28,
+    fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 4,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 14,
   },
 });

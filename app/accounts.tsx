@@ -117,6 +117,7 @@ export default function AccountsScreen() {
     <TouchableOpacity
       style={[styles.accountCard, { backgroundColor: colors.cardBackground, borderColor: colors.cardBorder }]}
       activeOpacity={0.7}
+      onPress={() => router.push({ pathname: '/edit-account/[id]', params: { id: item.id } })}
     >
       <View style={[styles.iconContainer, { backgroundColor: `${getAccountColor(item.account_type)}15` }]}>
         <Ionicons name={getAccountIcon(item.account_type)} size={24} color={getAccountColor(item.account_type)} />

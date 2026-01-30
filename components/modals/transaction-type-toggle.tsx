@@ -23,8 +23,8 @@ export function TransactionTypeToggle({ value, onChange }: TransactionTypeToggle
 
     React.useEffect(() => {
         slidePosition.value = withSpring(value === 'expense' ? 0 : 1, {
-            damping: 15,
-            stiffness: 150,
+            damping: 30,
+            stiffness: 200,
         });
     }, [value]);
 
@@ -48,6 +48,8 @@ export function TransactionTypeToggle({ value, onChange }: TransactionTypeToggle
                     animatedStyle,
                 ]}
             />
+
+            {/* ==== Expense ==== */}
             <Pressable
                 style={styles.option}
                 onPress={() => handlePress('expense')}
@@ -61,6 +63,8 @@ export function TransactionTypeToggle({ value, onChange }: TransactionTypeToggle
                     💸 Expense
                 </Text>
             </Pressable>
+
+            {/* ==== Income ==== */}
             <Pressable
                 style={styles.option}
                 onPress={() => handlePress('income')}
@@ -83,17 +87,18 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         borderRadius: 12,
         borderWidth: 1,
-        padding: 4,
+        paddingVertical: 4,
         position: 'relative',
     },
     slider: {
         position: 'absolute',
         top: 4,
         left: 4,
-        width: 170,
+        width: 148,
         height: 44,
         borderRadius: 10,
         zIndex: 0,
+        backgroundColor: 'blue'
     },
     option: {
         flex: 1,
@@ -101,6 +106,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         zIndex: 1,
+        paddingHorizontal: 14
     },
     optionText: {
         fontSize: 16,

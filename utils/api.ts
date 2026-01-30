@@ -15,8 +15,8 @@ import Constants from 'expo-constants';
  */
 
 // Get API URL from environment variables
-export const API_URL = Constants.expoConfig?.extra?.apiUrl ||
-  process.env.EXPO_PUBLIC_API_URL ||
+export const API_URL = process.env.EXPO_PUBLIC_API_URL ||
+  Constants.expoConfig?.extra?.apiUrl ||
   'http://localhost:8000/api';
 
 // Create axios instance with default configuration
@@ -139,7 +139,7 @@ export const handleApiError = (error: any): string => {
 };
 
 /**-----------------------------------| 
-        Add a new transaction           |
+        Add a new transaction         |
  -----------------------------------*/
 export interface AddTransactionRequest {
   account: number;
@@ -159,19 +159,70 @@ export const addTransaction = async (data: AddTransactionRequest) => {
   }
 };
 
+export const getTransaction = async (id: number) => {
+  try {
+    const response = await apiClient.get(API_ENDPOINTS.TRANSACTION_DETAIL(id));
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateTransaction = async (id: number, data: AddTransactionRequest) => {
+  try {
+    const response = await apiClient.put(API_ENDPOINTS.TRANSACTION_DETAIL(id), data);
+
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const deleteTransaction = async (id: number) => {
+  try {
+    const response = await apiClient.delete(API_ENDPOINTS.TRANSACTION_DETAIL(id));
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 /**-----------------------------------| 
         Add a new account             |
  ----------------------------------*/
 
 export const addAccount = async (data: AccountFormData) => {
   try {
-    console.log(`=======> data`);
-    console.log(JSON.stringify(data, null, 2));
-
-
     const response = await apiClient.post(API_ENDPOINTS.ACCOUNTS, data);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getAccount = async (id: number) => {
+  try {
+    const response = await apiClient.get(API_ENDPOINTS.ACCOUNT_DETAIL(id));
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateAccount = async (id: number, data: AccountFormData) => {
+  try {
+    const response = await apiClient.put(API_ENDPOINTS.ACCOUNT_DETAIL(id), data);
     console.log(`=======> response`);
     console.log(JSON.stringify(response.data, null, 2));
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const deleteAccount = async (id: number) => {
+  try {
+    const response = await apiClient.delete(API_ENDPOINTS.ACCOUNT_DETAIL(id));
     return response.data;
   } catch (error) {
     throw error;

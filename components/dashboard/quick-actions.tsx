@@ -7,15 +7,13 @@ import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 
 interface QuickActionsProps {
-    onAddExpense?: () => void;
-    onAddIncome?: () => void;
+    onAddTransaction?: () => void;
     onViewTransactions?: () => void;
     onManageAccounts?: () => void;
 }
 
 export function QuickActions({
-    onAddExpense,
-    onAddIncome,
+    onAddTransaction,
     onViewTransactions,
     onManageAccounts,
 }: QuickActionsProps) {
@@ -47,7 +45,7 @@ export function QuickActions({
             <CategoryIcon
                 name={icon}
                 color={isPrimary ? '#FFFFFF' : colors.primary}
-                size={32}
+                size={24}
                 containerStyle={[styles.icon, isPrimary && styles.iconPrimary]}
             />
             <ThemedText
@@ -55,6 +53,7 @@ export function QuickActions({
                     styles.label,
                     { color: isPrimary ? '#FFFFFF' : colors.text },
                 ]}
+                numberOfLines={1}
             >
                 {label}
             </ThemedText>
@@ -67,14 +66,9 @@ export function QuickActions({
             <View style={styles.grid}>
                 <ActionButton
                     icon="plus"
-                    label="Add Expense"
-                    onPress={onAddExpense}
+                    label="Add Transaction"
+                    onPress={onAddTransaction}
                     isPrimary
-                />
-                <ActionButton
-                    icon="money"
-                    label="Add Income"
-                    onPress={onAddIncome}
                 />
                 <ActionButton
                     icon="transactions"
@@ -104,33 +98,30 @@ const styles = StyleSheet.create({
     },
     grid: {
         flexDirection: 'row',
-        flexWrap: 'wrap',
-        gap: 12,
+        gap: 8,
     },
     actionButton: {
         flex: 1,
-        minWidth: '47%',
-        aspectRatio: 1.5,
-        borderRadius: 16,
-        padding: 16,
+        height: 85,
+        borderRadius: 12,
+        padding: 10,
         justifyContent: 'center',
         alignItems: 'center',
         borderWidth: 1,
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.08,
-        shadowRadius: 8,
-        elevation: 2,
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.05,
+        shadowRadius: 4,
+        elevation: 1,
     },
     icon: {
-        fontSize: 32,
-        marginBottom: 8,
+        marginBottom: 4,
     },
     iconPrimary: {
         opacity: 0.9,
     },
     label: {
-        fontSize: 14,
+        fontSize: 12,
         fontWeight: '600',
         textAlign: 'center',
     },

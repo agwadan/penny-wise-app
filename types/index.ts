@@ -43,7 +43,8 @@ export interface CategorySpending {
     category: string;
     amount: number;
     color: string;
-    percentage: number;
+    icon?: string;
+    percentage?: number;
 }
 
 export interface TransactionFormData {

@@ -21,14 +21,16 @@ import { NotesInput } from './notes-input';
 import { TransactionTypeToggle } from './transaction-type-toggle';
 
 interface AddTransactionModalProps {
-    onSubmit: (data: TransactionFormData) => void;
+    onSubmit: (data: TransactionFormData) => Promise<void> | void;
+    initialData?: TransactionFormData;
+    onDelete?: () => void;
 }
 
-export function AddTransactionModal({ onSubmit }: AddTransactionModalProps) {
+export function AddTransactionModal({ onSubmit, initialData, onDelete }: AddTransactionModalProps) {
     const colorScheme = useColorScheme();
     const colors = Colors[colorScheme ?? 'light'];
 
-    const [formData, setFormData] = React.useState<TransactionFormData>({
+    const [formData, setFormData] = React.useState<TransactionFormData>(initialData || {
         type: 'expense',
         amount: 0,
         categoryId: '',
@@ -37,6 +39,7 @@ export function AddTransactionModal({ onSubmit }: AddTransactionModalProps) {
         notes: '',
     });
 
+    const [isSubmitting, setIsSubmitting] = React.useState(false);
     const [errors, setErrors] = React.useState<Partial<Record<keyof TransactionFormData, string>>>({});
 
     const validateForm = (): boolean => {
@@ -58,13 +61,17 @@ export function AddTransactionModal({ onSubmit }: AddTransactionModalProps) {
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleSubmit = () => {
-
-        console.log(`formData: ${JSON.stringify(formData)}`);
-
+    const handleSubmit = async () => {
         if (validateForm()) {
-            onSubmit(formData);
-            router.back();
+            setIsSubmitting(true);
+            try {
+                await onSubmit(formData);
+                // Navigation is handled by the parent on success
+            } catch (error) {
+                // Error handling is managed by the parent via alerts
+            } finally {
+                setIsSubmitting(false);
+            }
         } else {
             Alert.alert('Validation Error', 'Please fill in all required fields');
         }
@@ -77,21 +84,22 @@ export function AddTransactionModal({ onSubmit }: AddTransactionModalProps) {
     return (
         <KeyboardAvoidingView
             style={[styles.container, { backgroundColor: colors.background }]}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            keyboardVerticalOffset={100}
+            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
         >
             <View style={[styles.header, { borderBottomColor: colors.divider }]}>
                 <Pressable onPress={handleCancel} style={styles.headerButton}>
                     <Text style={[styles.headerButtonText, { color: colors.textSecondary }]}>Cancel</Text>
                 </Pressable>
-                <Text style={[styles.headerTitle, { color: colors.text }]}>Add Transaction</Text>
+                <Text style={[styles.headerTitle, { color: colors.text }]}>{initialData ? 'Edit Transaction' : 'Add Transaction'}</Text>
                 <Pressable
-                    onPress={() => {
-                        handleSubmit();
-                    }}
+                    onPress={handleSubmit}
                     style={styles.headerButton}
+                    disabled={isSubmitting}
                 >
-                    <Text style={[styles.headerButtonText, { color: colors.primary }]}>Save</Text>
+                    <Text style={[styles.headerButtonText, { color: isSubmitting ? colors.textMuted : colors.primary }]}>
+                        {isSubmitting ? 'Saving...' : 'Save'}
+                    </Text>
                 </Pressable>
             </View>
 
@@ -137,17 +145,26 @@ export function AddTransactionModal({ onSubmit }: AddTransactionModalProps) {
                 <Pressable
                     style={[
                         styles.submitButton,
-                        { backgroundColor: formData.type === 'expense' ? colors.error : colors.success },
+                        { backgroundColor: formData.type === 'expense' ? colors.error : colors.success, opacity: isSubmitting ? 0.7 : 1 },
                     ]}
-                    onPress={() => {
-                        console.log('Button pressed!');
-                        handleSubmit();
-                    }}
+                    onPress={handleSubmit}
+                    disabled={isSubmitting}
                 >
                     <Text style={styles.submitButtonText}>
-                        {formData.type === 'expense' ? '💸 Add Expense' : '💰 Add Income'}
+                        {isSubmitting ? 'Processing...' : (initialData ? 'Update Transaction' : (formData.type === 'expense' ? '💸 Add Expense' : '💰 Add Income'))}
                     </Text>
                 </Pressable>
+
+                {onDelete && (
+                    <Pressable
+                        style={[styles.deleteButton, { borderColor: colors.error }]}
+                        onPress={onDelete}
+                    >
+                        <Text style={[styles.deleteButtonText, { color: colors.error }]}>
+                            🗑️ Delete Transaction
+                        </Text>
+                    </Pressable>
+                )}
             </ScrollView>
         </KeyboardAvoidingView>
     );
@@ -195,6 +212,17 @@ const styles = StyleSheet.create({
     submitButtonText: {
         color: '#FFFFFF',
         fontSize: 18,
+        fontWeight: 'bold',
+    },
+    deleteButton: {
+        paddingVertical: 16,
+        borderRadius: 12,
+        alignItems: 'center',
+        marginTop: 16,
+        borderWidth: 1,
+    },
+    deleteButtonText: {
+        fontSize: 16,
         fontWeight: 'bold',
     },
 });
