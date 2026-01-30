@@ -6,7 +6,7 @@ import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-nati
 
 interface AccountSelectorProps {
     value: string;
-    onChange: (accountId: string) => void;
+    onChange: (account: any) => void;
     error?: string;
 }
 
@@ -88,10 +88,14 @@ export function AccountSelector({ value, onChange, error }: AccountSelectorProps
                                         borderWidth: isSelected ? 2 : 1,
                                     },
                                 ]}
-                                onPress={() => onChange(account.id.toString())}
+                                onPress={() => onChange(account)}
                             >
                                 <View style={styles.accountLeft}>
-                                    <Text style={styles.accountIcon}>{getAccountIcon(accountType)}</Text>
+                                    <View style={[styles.iconCircle, { backgroundColor: isSelected ? colors.primary : `${colors.primary}15` }]}>
+                                        <Text style={[styles.accountIcon, { color: isSelected ? '#FFFFFF' : colors.primary }]}>
+                                            {getAccountIcon(accountType)}
+                                        </Text>
+                                    </View>
                                     <View>
                                         <Text style={[styles.accountName, { color: colors.text }]}>
                                             {account.name}
@@ -121,33 +125,46 @@ export function AccountSelector({ value, onChange, error }: AccountSelectorProps
 
 const styles = StyleSheet.create({
     container: {
-        marginBottom: 20,
+        marginBottom: 24,
     },
     label: {
         fontSize: 14,
         fontWeight: '600',
-        marginBottom: 8,
+        marginBottom: 12,
+        paddingHorizontal: 4,
     },
     accountList: {
-        gap: 8,
+        gap: 12,
     },
     accountItem: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
         padding: 12,
-        borderRadius: 12,
+        borderRadius: 16,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.05,
+        shadowRadius: 2,
+        elevation: 1,
     },
     accountLeft: {
         flexDirection: 'row',
         alignItems: 'center',
         gap: 12,
     },
+    iconCircle: {
+        width: 44,
+        height: 44,
+        borderRadius: 22,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
     accountIcon: {
-        fontSize: 24,
+        fontSize: 20,
     },
     accountName: {
-        fontSize: 16,
+        fontSize: 15,
         fontWeight: '600',
     },
     accountType: {
@@ -156,7 +173,7 @@ const styles = StyleSheet.create({
         marginTop: 2,
     },
     accountBalance: {
-        fontSize: 16,
+        fontSize: 15,
         fontWeight: '700',
     },
     error: {

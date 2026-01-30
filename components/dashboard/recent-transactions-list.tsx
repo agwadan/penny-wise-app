@@ -43,8 +43,16 @@ export function RecentTransactionsList({ onViewAll, refreshTrigger = false }: Re
         loadData();
     }, [refreshTrigger]);
 
-    const formatCurrency = (amount: number) => {
-        return `UGX ${amount.toLocaleString('en-US', {
+    const formatCurrency = (amount: number, currency: string = 'UGX') => {
+        const symbols: Record<string, string> = {
+            USD: '$',
+            EUR: '€',
+            GBP: '£',
+            KES: 'KSh',
+            UGX: 'UGX',
+        };
+        const symbol = symbols[currency] || currency;
+        return `${symbol} ${amount.toLocaleString('en-US', {
             minimumFractionDigits: 0,
             maximumFractionDigits: 0,
         })}`;
@@ -100,7 +108,7 @@ export function RecentTransactionsList({ onViewAll, refreshTrigger = false }: Re
                 </View>
                 <View style={styles.transactionRight}>
                     <ThemedText style={[styles.amount, { color: amountColor }]}>
-                        {sign}{formatCurrency(parseFloat(item.amount) || 0)}
+                        {sign}{formatCurrency(parseFloat(item.amount) || 0, item.currency)}
                     </ThemedText>
                     <ThemedText style={[styles.date, { color: colors.textMuted }]}>
                         {formatDate(item.date || item.created_at || item.timestamp || new Date())}

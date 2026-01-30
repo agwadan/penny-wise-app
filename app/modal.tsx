@@ -28,6 +28,7 @@ export default function ModalScreen() {
         amount: data.amount,
         description: data.notes || '',
         date: formattedDate,
+        currency: data.currency,
       };
 
       await addTransaction(requestData);

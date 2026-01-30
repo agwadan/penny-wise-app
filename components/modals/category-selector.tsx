@@ -46,28 +46,33 @@ export function CategorySelector({ value, onChange, error }: CategorySelectorPro
                 ) : (
                     categories.map((category) => {
                         const isSelected = value === category.id.toString();
+                        const categoryColor = category.color || colors.primary;
                         return (
                             <Pressable
                                 key={category.id}
-                                style={[
-                                    styles.categoryItem,
-                                    {
-                                        backgroundColor: isSelected ? (category.color || colors.primary) : colors.cardBackground,
-                                        borderColor: isSelected ? (category.color || colors.primary) : colors.cardBorder,
-                                    },
-                                ]}
+                                style={styles.categoryItem}
                                 onPress={() => onChange(category.id.toString())}
                             >
-                                <CategoryIcon
-                                    name={category.icon}
-                                    color={isSelected ? '#FFFFFF' : (category.color || colors.primary)}
-                                    size={24}
-                                    containerStyle={styles.categoryIcon}
-                                />
+                                <View
+                                    style={[
+                                        styles.iconCircle,
+                                        {
+                                            backgroundColor: isSelected ? categoryColor : `${categoryColor}15`,
+                                            borderColor: categoryColor,
+                                            borderWidth: isSelected ? 0 : 1,
+                                        },
+                                    ]}
+                                >
+                                    <CategoryIcon
+                                        name={category.icon}
+                                        color={isSelected ? '#FFFFFF' : categoryColor}
+                                        size={24}
+                                    />
+                                </View>
                                 <Text
                                     style={[
                                         styles.categoryName,
-                                        { color: isSelected ? '#FFFFFF' : colors.text },
+                                        { color: isSelected ? colors.text : colors.textSecondary, fontWeight: isSelected ? '700' : '500' },
                                     ]}
                                     numberOfLines={1}
                                 >
@@ -85,32 +90,37 @@ export function CategorySelector({ value, onChange, error }: CategorySelectorPro
 
 const styles = StyleSheet.create({
     container: {
-        marginBottom: 20,
+        marginBottom: 24,
     },
     label: {
         fontSize: 14,
         fontWeight: '600',
-        marginBottom: 8,
+        marginBottom: 12,
+        paddingHorizontal: 4,
     },
     scrollContent: {
         paddingVertical: 4,
-        gap: 8,
+        gap: 16,
     },
     categoryItem: {
-        paddingHorizontal: 16,
-        paddingVertical: 12,
-        borderRadius: 12,
-        borderWidth: 1,
         alignItems: 'center',
-        minWidth: 100,
+        width: 80,
     },
-    categoryIcon: {
-        fontSize: 24,
-        marginBottom: 4,
+    iconCircle: {
+        width: 56,
+        height: 56,
+        borderRadius: 28,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 8,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 2,
     },
     categoryName: {
         fontSize: 12,
-        fontWeight: '600',
         textAlign: 'center',
     },
     error: {

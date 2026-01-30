@@ -30,6 +30,7 @@ export default function EditTransactionScreen() {
           accountId: data.account.toString(),
           date: new Date(data.date),
           notes: data.description || '',
+          currency: data.currency,
         });
       } catch (error) {
         const errorMessage = handleApiError(error);
@@ -56,6 +57,7 @@ export default function EditTransactionScreen() {
         amount: data.amount,
         description: data.notes || '',
         date: formattedDate,
+        currency: data.currency,
       };
 
       await updateTransaction(parseInt(id, 10), requestData);

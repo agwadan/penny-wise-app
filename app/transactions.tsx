@@ -24,6 +24,7 @@ interface Transaction {
   transaction_type: 'income' | 'expense';
   category_name: string;
   account_name: string;
+  currency: string;
 }
 
 interface TransactionsResponse {
@@ -71,9 +72,17 @@ export default function TransactionsScreen() {
     }, [])
   );
 
-  const formatCurrency = (amount: string) => {
+  const formatCurrency = (amount: string, currency: string = 'UGX') => {
     const val = parseFloat(amount);
-    return `UGX ${val.toLocaleString('en-US', {
+    const currencySymbols: Record<string, string> = {
+      USD: '$',
+      EUR: '€',
+      GBP: '£',
+      KES: 'KSh',
+      UGX: 'UGX',
+    };
+    const symbol = currencySymbols[currency] || currency;
+    return `${symbol} ${val.toLocaleString('en-US', {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     })}`;
@@ -110,7 +119,7 @@ export default function TransactionsScreen() {
         </View>
         <View style={styles.amountContainer}>
           <ThemedText style={[styles.amountText, { color: amountColor }]}>
-            {isIncome ? '+' : '-'}{formatCurrency(item.amount)}
+            {isIncome ? '+' : '-'}{formatCurrency(item.amount, item.currency)}
           </ThemedText>
           <ThemedText style={[styles.dateText, { color: colors.textMuted }]}>
             {new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}

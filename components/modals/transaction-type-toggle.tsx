@@ -3,7 +3,7 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import { TransactionType } from '@/types';
 import * as Haptics from 'expo-haptics';
 import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import Animated, {
     useAnimatedStyle,
     useSharedValue,
@@ -16,20 +16,25 @@ interface TransactionTypeToggleProps {
 }
 
 export function TransactionTypeToggle({ value, onChange }: TransactionTypeToggleProps) {
+    const { width: windowWidth } = useWindowDimensions();
     const colorScheme = useColorScheme();
     const colors = Colors[colorScheme ?? 'light'];
+
+    // Adjust container width to 32px padding (16 on each side)
+    const toggleWidth = windowWidth - 32;
+    const sliderWidth = (toggleWidth - 8) / 2; // 4px padding on each side of slider
 
     const slidePosition = useSharedValue(value === 'expense' ? 0 : 1);
 
     React.useEffect(() => {
         slidePosition.value = withSpring(value === 'expense' ? 0 : 1, {
-            damping: 30,
+            damping: 25,
             stiffness: 200,
         });
     }, [value]);
 
     const animatedStyle = useAnimatedStyle(() => ({
-        transform: [{ translateX: slidePosition.value * 170 }],
+        transform: [{ translateX: slidePosition.value * sliderWidth }],
     }));
 
     const handlePress = (type: TransactionType) => {
@@ -40,42 +45,27 @@ export function TransactionTypeToggle({ value, onChange }: TransactionTypeToggle
     };
 
     return (
-        <View style={[styles.container, { backgroundColor: colors.cardBackground, borderColor: colors.cardBorder }]}>
+        <View style={[styles.container, { backgroundColor: colors.cardBackground }]}>
             <Animated.View
                 style={[
                     styles.slider,
-                    { backgroundColor: value === 'expense' ? colors.error : colors.success },
+                    {
+                        backgroundColor: value === 'expense' ? '#FF4F6E' : '#27CDA1',
+                        width: sliderWidth
+                    },
                     animatedStyle,
                 ]}
             />
 
-            {/* ==== Expense ==== */}
-            <Pressable
-                style={styles.option}
-                onPress={() => handlePress('expense')}
-            >
-                <Text
-                    style={[
-                        styles.optionText,
-                        { color: value === 'expense' ? '#FFFFFF' : colors.textSecondary },
-                    ]}
-                >
-                    💸 Expense
+            <Pressable style={styles.option} onPress={() => handlePress('expense')}>
+                <Text style={[styles.optionText, { color: value === 'expense' ? '#FFFFFF' : colors.textSecondary }]}>
+                    Expense
                 </Text>
             </Pressable>
 
-            {/* ==== Income ==== */}
-            <Pressable
-                style={styles.option}
-                onPress={() => handlePress('income')}
-            >
-                <Text
-                    style={[
-                        styles.optionText,
-                        { color: value === 'income' ? '#FFFFFF' : colors.textSecondary },
-                    ]}
-                >
-                    💰 Income
+            <Pressable style={styles.option} onPress={() => handlePress('income')}>
+                <Text style={[styles.optionText, { color: value === 'income' ? '#FFFFFF' : colors.textSecondary }]}>
+                    Income
                 </Text>
             </Pressable>
         </View>
@@ -85,31 +75,28 @@ export function TransactionTypeToggle({ value, onChange }: TransactionTypeToggle
 const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
-        borderRadius: 12,
-        borderWidth: 1,
-        paddingVertical: 4,
+        borderRadius: 25,
+        padding: 4,
         position: 'relative',
+        height: 50,
+        marginBottom: 24,
     },
     slider: {
         position: 'absolute',
         top: 4,
         left: 4,
-        width: 148,
-        height: 44,
-        borderRadius: 10,
+        height: 42,
+        borderRadius: 21,
         zIndex: 0,
-        backgroundColor: 'blue'
     },
     option: {
         flex: 1,
-        paddingVertical: 12,
         alignItems: 'center',
         justifyContent: 'center',
         zIndex: 1,
-        paddingHorizontal: 14
     },
     optionText: {
-        fontSize: 16,
-        fontWeight: '600',
+        fontSize: 15,
+        fontWeight: '700',
     },
 });

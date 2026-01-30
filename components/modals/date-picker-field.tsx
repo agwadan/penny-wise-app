@@ -14,56 +14,53 @@ export function DatePickerField({ value, onChange }: DatePickerFieldProps) {
 
     const formatDate = (date: Date) => {
         return date.toLocaleDateString('en-US', {
-            weekday: 'short',
             year: 'numeric',
-            month: 'short',
+            month: 'long',
             day: 'numeric',
         });
     };
 
-    // For now, just display the date. Full date picker can be added later
     const handlePress = () => {
-        // TODO: Implement date picker modal or native picker
         console.log('Date picker pressed');
     };
 
     return (
-        <View style={styles.container}>
-            <Text style={[styles.label, { color: colors.textSecondary }]}>Date</Text>
-            <Pressable
-                style={[styles.dateButton, { backgroundColor: colors.cardBackground, borderColor: colors.cardBorder }]}
-                onPress={handlePress}
-            >
+        <Pressable
+            style={[styles.container, { borderBottomColor: colors.divider }]}
+            onPress={handlePress}
+        >
+            <View style={styles.left}>
                 <Text style={styles.icon}>📅</Text>
-                <Text style={[styles.dateText, { color: colors.text }]}>{formatDate(value)}</Text>
-            </Pressable>
-        </View>
+                <Text style={[styles.label, { color: colors.textSecondary }]}>Date</Text>
+            </View>
+            <Text style={[styles.dateText, { color: colors.text }]}>{formatDate(value)}</Text>
+        </Pressable>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
-        marginBottom: 20,
-    },
-    label: {
-        fontSize: 14,
-        fontWeight: '600',
-        marginBottom: 8,
-    },
-    dateButton: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingHorizontal: 16,
-        paddingVertical: 14,
-        borderRadius: 12,
-        borderWidth: 1,
+        justifyContent: 'space-between',
+        paddingVertical: 16,
+        borderBottomWidth: 1,
+        marginBottom: 8,
+    },
+    left: {
+        flexDirection: 'row',
+        alignItems: 'center',
         gap: 12,
     },
     icon: {
         fontSize: 20,
     },
-    dateText: {
-        fontSize: 16,
+    label: {
+        fontSize: 15,
         fontWeight: '500',
+    },
+    dateText: {
+        fontSize: 15,
+        fontWeight: '600',
     },
 });

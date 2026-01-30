@@ -8,11 +8,13 @@ interface AmountInputProps {
     onChange: (value: number) => void;
     error?: string;
     currency?: string;
+    type?: 'expense' | 'income';
 }
 
-export function AmountInput({ value, onChange, error, currency = 'UGX' }: AmountInputProps) {
+export function AmountInput({ value, onChange, error, currency = 'UGX', type = 'expense' }: AmountInputProps) {
     const colorScheme = useColorScheme();
     const colors = Colors[colorScheme ?? 'light'];
+    const amountColor = type === 'expense' ? '#FF4F6E' : '#27CDA1';
 
     const currencySymbols: Record<string, string> = {
         USD: '$',
@@ -31,42 +33,29 @@ export function AmountInput({ value, onChange, error, currency = 'UGX' }: Amount
     };
 
     const handleChange = (text: string) => {
-        // Strip commas for internal logic
         const rawValue = text.replace(/,/g, '');
-
-        // Allow only numbers and decimal point
         const cleaned = rawValue.replace(/[^0-9.]/g, '');
-
-        // Ensure only one decimal point
         const parts = cleaned.split('.');
-        if (parts.length > 2) {
-            return;
-        }
-
-        // Limit decimal places to 2
-        if (parts[1] && parts[1].length > 2) {
-            return;
-        }
-
+        if (parts.length > 2 || (parts[1] && parts[1].length > 2)) return;
         const numericValue = cleaned === '' ? 0 : parseFloat(cleaned);
         onChange(numericValue);
     };
 
     return (
         <View style={styles.container}>
-            <Text style={[styles.label, { color: colors.textSecondary }]}>Amount</Text>
-            <View style={[styles.inputContainer, { backgroundColor: colors.cardBackground, borderColor: error ? colors.error : colors.cardBorder }]}>
-                <Text style={[styles.currencySymbol, { color: colors.text }]}>
+            <View style={styles.inputWrapper}>
+                <Text style={[styles.currencySymbol, { color: amountColor }]}>
                     {currencySymbols[currency]}
                 </Text>
                 <TextInput
-                    style={[styles.input, { color: colors.text }]}
+                    style={[styles.input, { color: amountColor }]}
                     value={formatWithSeparators(value)}
                     onChangeText={handleChange}
                     keyboardType="decimal-pad"
                     placeholder="0"
-                    placeholderTextColor={colors.textMuted}
-                    selectionColor={colors.primary}
+                    placeholderTextColor={`${amountColor}40`}
+                    selectionColor={amountColor}
+                    autoFocus={!value}
                 />
             </View>
             {error && <Text style={[styles.error, { color: colors.error }]}>{error}</Text>}
@@ -76,35 +65,28 @@ export function AmountInput({ value, onChange, error, currency = 'UGX' }: Amount
 
 const styles = StyleSheet.create({
     container: {
-        marginBottom: 20,
+        marginBottom: 32,
+        alignItems: 'center',
     },
-    label: {
-        fontSize: 14,
-        fontWeight: '600',
-        marginBottom: 8,
-    },
-    inputContainer: {
+    inputWrapper: {
         flexDirection: 'row',
         alignItems: 'center',
-        borderRadius: 12,
-        borderWidth: 1,
-        paddingHorizontal: 16,
-        paddingVertical: 4,
+        justifyContent: 'center',
     },
     currencySymbol: {
-        fontSize: 32,
-        fontWeight: 'bold',
+        fontSize: 36,
+        fontWeight: '700',
         marginRight: 8,
     },
     input: {
-        flex: 1,
-        fontSize: 32,
-        fontWeight: 'bold',
-        paddingVertical: 12,
+        fontSize: 48,
+        fontWeight: '800',
+        paddingVertical: 10,
+        minWidth: 100,
+        textAlign: 'center',
     },
     error: {
         fontSize: 12,
         marginTop: 4,
-        marginLeft: 4,
     },
 });

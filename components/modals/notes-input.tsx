@@ -13,56 +13,61 @@ export function NotesInput({ value, onChange }: NotesInputProps) {
     const colors = Colors[colorScheme ?? 'light'];
 
     return (
-        <View style={styles.container}>
-            <Text style={[styles.label, { color: colors.textSecondary }]}>
-                Notes <Text style={{ color: colors.textMuted }}>(Optional)</Text>
-            </Text>
+        <View style={[styles.container, { borderBottomColor: colors.divider }]}>
+            <View style={styles.topRow}>
+                <View style={styles.left}>
+                    <Text style={styles.icon}>📝</Text>
+                    <Text style={[styles.label, { color: colors.textSecondary }]}>Notes</Text>
+                </View>
+                <Text style={[styles.charCount, { color: colors.textMuted }]}>
+                    {value.length}/100
+                </Text>
+            </View>
             <TextInput
-                style={[
-                    styles.input,
-                    {
-                        backgroundColor: colors.cardBackground,
-                        borderColor: colors.cardBorder,
-                        color: colors.text,
-                    },
-                ]}
+                style={[styles.input, { color: colors.text }]}
                 value={value}
                 onChangeText={onChange}
-                placeholder="Add a note about this transaction..."
+                placeholder="What was this for?"
                 placeholderTextColor={colors.textMuted}
                 multiline
-                numberOfLines={3}
-                textAlignVertical="top"
-                maxLength={200}
+                maxLength={100}
                 selectionColor={colors.primary}
             />
-            <Text style={[styles.charCount, { color: colors.textMuted }]}>
-                {value.length}/200
-            </Text>
         </View>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
-        marginBottom: 20,
+        paddingVertical: 16,
+        borderBottomWidth: 1,
+        marginBottom: 24,
     },
-    label: {
-        fontSize: 14,
-        fontWeight: '600',
+    topRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
         marginBottom: 8,
     },
+    left: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 12,
+    },
+    icon: {
+        fontSize: 20,
+    },
+    label: {
+        fontSize: 15,
+        fontWeight: '500',
+    },
     input: {
-        borderRadius: 12,
-        borderWidth: 1,
-        paddingHorizontal: 16,
-        paddingVertical: 12,
-        fontSize: 16,
-        minHeight: 80,
+        fontSize: 15,
+        fontWeight: '500',
+        padding: 0,
+        marginLeft: 32,
     },
     charCount: {
         fontSize: 12,
-        textAlign: 'right',
-        marginTop: 4,
     },
 });

@@ -54,6 +54,7 @@ export interface TransactionFormData {
     accountId: string;
     date: Date;
     notes: string;
+    currency?: Currency;
 }
 
 export interface AccountFormData {

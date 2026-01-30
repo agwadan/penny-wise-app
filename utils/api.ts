@@ -148,6 +148,7 @@ export interface AddTransactionRequest {
   amount: number;
   description: string;
   date: string; // Format: YYYY-MM-DD
+  currency?: string;
 }
 
 export const addTransaction = async (data: AddTransactionRequest) => {

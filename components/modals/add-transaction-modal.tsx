@@ -37,7 +37,16 @@ export function AddTransactionModal({ onSubmit, initialData, onDelete }: AddTran
         accountId: '',
         date: new Date(),
         notes: '',
+        currency: 'UGX',
     });
+
+    const currencies = [
+        { label: 'UGX', value: 'UGX' },
+        { label: 'KES', value: 'KES' },
+        { label: 'USD', value: 'USD' },
+        { label: 'EUR', value: 'EUR' },
+        { label: 'GBP', value: 'GBP' },
+    ];
 
     const [isSubmitting, setIsSubmitting] = React.useState(false);
     const [errors, setErrors] = React.useState<Partial<Record<keyof TransactionFormData, string>>>({});
@@ -109,29 +118,36 @@ export function AddTransactionModal({ onSubmit, initialData, onDelete }: AddTran
                 showsVerticalScrollIndicator={false}
                 keyboardShouldPersistTaps="handled"
             >
+                {/* 1. Large Amount Input */}
+                <AmountInput
+                    value={formData.amount}
+                    onChange={(amount) => setFormData({ ...formData, amount })}
+                    error={errors.amount}
+                    currency={formData.currency}
+                    type={formData.type}
+                />
+
+                {/* 2. Type Toggle */}
                 <TransactionTypeToggle
                     value={formData.type}
                     onChange={(type) => setFormData({ ...formData, type })}
                 />
 
-                <AmountInput
-                    value={formData.amount}
-                    onChange={(amount) => setFormData({ ...formData, amount })}
-                    error={errors.amount}
+                {/* 3. Account Selector */}
+                <AccountSelector
+                    value={formData.accountId}
+                    onChange={(account) => setFormData({ ...formData, accountId: account.id.toString(), currency: account.currency })}
+                    error={errors.accountId}
                 />
 
+                {/* 4. Category Selector */}
                 <CategorySelector
                     value={formData.categoryId}
                     onChange={(categoryId) => setFormData({ ...formData, categoryId })}
                     error={errors.categoryId}
                 />
 
-                <AccountSelector
-                    value={formData.accountId}
-                    onChange={(accountId) => setFormData({ ...formData, accountId })}
-                    error={errors.accountId}
-                />
-
+                {/* 5. Date and Notes (integrated rows) */}
                 <DatePickerField
                     value={formData.date}
                     onChange={(date) => setFormData({ ...formData, date })}
@@ -145,13 +161,13 @@ export function AddTransactionModal({ onSubmit, initialData, onDelete }: AddTran
                 <Pressable
                     style={[
                         styles.submitButton,
-                        { backgroundColor: formData.type === 'expense' ? colors.error : colors.success, opacity: isSubmitting ? 0.7 : 1 },
+                        { backgroundColor: formData.type === 'expense' ? '#FF4F6E' : '#27CDA1', opacity: isSubmitting ? 0.7 : 1 },
                     ]}
                     onPress={handleSubmit}
                     disabled={isSubmitting}
                 >
                     <Text style={styles.submitButtonText}>
-                        {isSubmitting ? 'Processing...' : (initialData ? 'Update Transaction' : (formData.type === 'expense' ? '💸 Add Expense' : '💰 Add Income'))}
+                        {isSubmitting ? 'Saving...' : (initialData ? 'Update Transaction' : 'Save Transaction')}
                     </Text>
                 </Pressable>
 
@@ -204,10 +220,15 @@ const styles = StyleSheet.create({
         paddingBottom: 32,
     },
     submitButton: {
-        paddingVertical: 16,
-        borderRadius: 12,
+        paddingVertical: 18,
+        borderRadius: 24,
         alignItems: 'center',
-        marginTop: 8,
+        marginTop: 20,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.2,
+        shadowRadius: 10,
+        elevation: 5,
     },
     submitButtonText: {
         color: '#FFFFFF',
@@ -223,6 +244,28 @@ const styles = StyleSheet.create({
     },
     deleteButtonText: {
         fontSize: 16,
+        fontWeight: 'bold',
+    },
+    inputContainer: {
+        marginBottom: 20,
+    },
+    label: {
+        fontSize: 14,
+        fontWeight: '600',
+        marginBottom: 8,
+    },
+    currencyList: {
+        gap: 8,
+        paddingBottom: 4,
+    },
+    currencyBadge: {
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        borderRadius: 20,
+        borderWidth: 1,
+    },
+    currencyText: {
+        fontSize: 14,
         fontWeight: 'bold',
     },
 });
