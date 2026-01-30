@@ -15,8 +15,8 @@ import Constants from 'expo-constants';
  */
 
 // Get API URL from environment variables
-export const API_URL = Constants.expoConfig?.extra?.apiUrl ||
-  process.env.EXPO_PUBLIC_API_URL ||
+export const API_URL = process.env.EXPO_PUBLIC_API_URL ||
+  Constants.expoConfig?.extra?.apiUrl ||
   'http://localhost:8000/api';
 
 // Create axios instance with default configuration
