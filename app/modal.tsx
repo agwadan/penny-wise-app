@@ -1,6 +1,7 @@
 import { AddTransactionModal } from '@/components/modals/add-transaction-modal';
 import { TransactionFormData } from '@/types';
 import { addTransaction, handleApiError } from '@/utils/api';
+import { router } from 'expo-router';
 import { Alert, StyleSheet } from 'react-native';
 
 export default function ModalScreen() {
@@ -31,6 +32,7 @@ export default function ModalScreen() {
 
       await addTransaction(requestData);
       Alert.alert('Success', 'Transaction added successfully');
+      router.back();
     } catch (error) {
       const errorMessage = handleApiError(error);
       Alert.alert('Error', errorMessage);

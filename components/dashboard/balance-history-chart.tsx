@@ -160,6 +160,7 @@ export function BalanceHistoryChart({ refreshTrigger = false }: BalanceHistoryCh
                     style={{
                         marginVertical: 8,
                         borderRadius: 16,
+                        overflow: 'visible'
                     }}
                     withInnerLines={true}
                     withOuterLines={false}

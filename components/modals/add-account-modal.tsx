@@ -18,7 +18,9 @@ import {
 import { AmountInput } from './amount-input';
 
 interface AddAccountModalProps {
-  onSubmit: (data: AccountFormData) => void;
+  onSubmit: (data: AccountFormData) => Promise<void> | void;
+  initialData?: AccountFormData;
+  onDelete?: () => void;
 }
 
 const getAccountIcon = (value: string) => {
@@ -45,14 +47,14 @@ const currencies = [
   { label: 'GBP', value: 'GBP' },
 ];
 
-export function AddAccountModal({ onSubmit }: AddAccountModalProps) {
+export function AddAccountModal({ onSubmit, initialData, onDelete }: AddAccountModalProps) {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
 
   const [dynamicAccountTypes, setDynamicAccountTypes] = useState<{ label: string; value: string }[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const [formData, setFormData] = React.useState<AccountFormData>({
+  const [formData, setFormData] = React.useState<AccountFormData>(initialData || {
     name: '',
     account_type: 'savings',
     initial_balance: 0,
@@ -89,6 +91,7 @@ export function AddAccountModal({ onSubmit }: AddAccountModalProps) {
   }, []);
 
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = React.useState<Partial<Record<keyof AccountFormData, string>>>({});
 
   const validateForm = (): boolean => {
@@ -98,7 +101,7 @@ export function AddAccountModal({ onSubmit }: AddAccountModalProps) {
       newErrors.name = 'Please enter an account name';
     }
 
-    if (!formData.initial_balance || formData.initial_balance <= 0) {
+    if (!initialData && (!formData.initial_balance || formData.initial_balance <= 0)) {
       newErrors.initial_balance = 'Please enter an initial balance';
     }
 
@@ -106,26 +109,32 @@ export function AddAccountModal({ onSubmit }: AddAccountModalProps) {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (validateForm()) {
-      onSubmit(formData);
-      router.back();
+      setIsSubmitting(true);
+      try {
+        await onSubmit(formData);
+      } catch (e) {
+        // Error handled by parent
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   };
 
   return (
     <KeyboardAvoidingView
       style={[styles.container, { backgroundColor: colors.background }]}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={100}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
     >
       <View style={[styles.header, { borderBottomColor: colors.divider }]}>
-        <Pressable onPress={() => router.back()} style={styles.headerButton}>
+        <Pressable onPress={() => router.back()} style={styles.headerButton} disabled={isSubmitting}>
           <Text style={[styles.headerButtonText, { color: colors.textSecondary }]}>Cancel</Text>
         </Pressable>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>Add Account</Text>
-        <Pressable onPress={handleSubmit} style={styles.headerButton}>
-          <Text style={[styles.headerButtonText, { color: colors.primary }]}>Save</Text>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>{initialData ? 'Edit Account' : 'Add Account'}</Text>
+        <Pressable onPress={handleSubmit} style={styles.headerButton} disabled={isSubmitting}>
+          <Text style={[styles.headerButtonText, { color: isSubmitting ? colors.textMuted : colors.primary }]}>{isSubmitting ? 'Saving' : 'Save'}</Text>
         </Pressable>
       </View>
 
@@ -188,46 +197,61 @@ export function AddAccountModal({ onSubmit }: AddAccountModalProps) {
         </View>
 
         {/* ==== Balance ==== */}
-        <AmountInput
-          value={formData.initial_balance}
-          onChange={(initial_balance) => setFormData({ ...formData, initial_balance })}
-          error={errors.initial_balance}
-          currency={formData.currency}
-        />
+        {!initialData && (
+          <AmountInput
+            value={formData.initial_balance}
+            onChange={(initial_balance) => setFormData({ ...formData, initial_balance })}
+            error={errors.initial_balance}
+            currency={formData.currency}
+          />
+        )}
 
         {/* Currency */}
-        <View style={styles.inputContainer}>
-          <Text style={[styles.label, { color: colors.textSecondary }]}>Currency</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.currencyList}>
-            {currencies.map((curr) => {
-              const isSelected = formData.currency === curr.value;
-              return (
-                <Pressable
-                  key={curr.value}
-                  style={[
-                    styles.currencyBadge,
-                    {
-                      backgroundColor: isSelected ? colors.primary : colors.cardBackground,
-                      borderColor: colors.cardBorder,
-                    },
-                  ]}
-                  onPress={() => setFormData({ ...formData, currency: curr.value })}
-                >
-                  <Text style={[styles.currencyText, { color: isSelected ? '#FFFFFF' : colors.text }]}>
-                    {curr.value}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </ScrollView>
-        </View>
+        {!initialData && (
+          <View style={styles.inputContainer}>
+            <Text style={[styles.label, { color: colors.textSecondary }]}>Currency</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.currencyList}>
+              {currencies.map((curr) => {
+                const isSelected = formData.currency === curr.value;
+                return (
+                  <Pressable
+                    key={curr.value}
+                    style={[
+                      styles.currencyBadge,
+                      {
+                        backgroundColor: isSelected ? colors.primary : colors.cardBackground,
+                        borderColor: colors.cardBorder,
+                      },
+                    ]}
+                    onPress={() => setFormData({ ...formData, currency: curr.value })}
+                  >
+                    <Text style={[styles.currencyText, { color: isSelected ? '#FFFFFF' : colors.text }]}>
+                      {curr.value}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </ScrollView>
+          </View>
+        )}
 
         <Pressable
-          style={[styles.submitButton, { backgroundColor: colors.primary }]}
+          style={[styles.submitButton, { backgroundColor: colors.primary, opacity: isSubmitting ? 0.7 : 1 }]}
           onPress={handleSubmit}
+          disabled={isSubmitting}
         >
-          <Text style={styles.submitButtonText}>Create Account</Text>
+          <Text style={styles.submitButtonText}>{isSubmitting ? 'Saving...' : (initialData ? 'Update Account' : 'Create Account')}</Text>
         </Pressable>
+
+        {onDelete && (
+          <Pressable
+            style={[styles.deleteButton, { borderColor: colors.error }]}
+            onPress={onDelete}
+            disabled={isSubmitting}
+          >
+            <Text style={[styles.deleteButtonText, { color: colors.error }]}>🗑️ Delete Account</Text>
+          </Pressable>
+        )}
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -322,6 +346,17 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  deleteButton: {
+    paddingVertical: 16,
+    borderRadius: 16,
+    alignItems: 'center',
+    marginTop: 16,
+    borderWidth: 1,
+  },
+  deleteButtonText: {
+    fontSize: 16,
+    fontWeight: '700',
   },
   error: {
     fontSize: 12,
