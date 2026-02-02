@@ -1,6 +1,7 @@
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { TransactionFormData } from '@/types';
+import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React from 'react';
 import {
@@ -39,14 +40,6 @@ export function AddTransactionModal({ onSubmit, initialData, onDelete }: AddTran
         notes: '',
         currency: 'UGX',
     });
-
-    const currencies = [
-        { label: 'UGX', value: 'UGX' },
-        { label: 'KES', value: 'KES' },
-        { label: 'USD', value: 'USD' },
-        { label: 'EUR', value: 'EUR' },
-        { label: 'GBP', value: 'GBP' },
-    ];
 
     const [isSubmitting, setIsSubmitting] = React.useState(false);
     const [errors, setErrors] = React.useState<Partial<Record<keyof TransactionFormData, string>>>({});
@@ -96,6 +89,8 @@ export function AddTransactionModal({ onSubmit, initialData, onDelete }: AddTran
             behavior={Platform.OS === 'ios' ? 'padding' : undefined}
             keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
         >
+
+            {/* ==== Header Section ==== */}
             <View style={[styles.header, { borderBottomColor: colors.divider }]}>
                 <Pressable onPress={handleCancel} style={styles.headerButton}>
                     <Text style={[styles.headerButtonText, { color: colors.textSecondary }]}>Cancel</Text>
@@ -112,13 +107,14 @@ export function AddTransactionModal({ onSubmit, initialData, onDelete }: AddTran
                 </Pressable>
             </View>
 
+            {/* ==== Form Section ==== */}
             <ScrollView
                 style={styles.scrollView}
                 contentContainerStyle={styles.scrollContent}
                 showsVerticalScrollIndicator={false}
                 keyboardShouldPersistTaps="handled"
             >
-                {/* 1. Large Amount Input */}
+                {/* 1.  Amount Input */}
                 <AmountInput
                     value={formData.amount}
                     onChange={(amount) => setFormData({ ...formData, amount })}
@@ -176,9 +172,12 @@ export function AddTransactionModal({ onSubmit, initialData, onDelete }: AddTran
                         style={[styles.deleteButton, { borderColor: colors.error }]}
                         onPress={onDelete}
                     >
-                        <Text style={[styles.deleteButtonText, { color: colors.error }]}>
-                            🗑️ Delete Transaction
-                        </Text>
+                        <View style={styles.deleteButtonContent}>
+                            <Ionicons name="trash-outline" size={20} color={colors.error} style={{ marginRight: 8 }} />
+                            <Text style={[styles.deleteButtonText, { color: colors.error }]}>
+                                Delete Transaction
+                            </Text>
+                        </View>
                     </Pressable>
                 )}
             </ScrollView>
@@ -245,6 +244,11 @@ const styles = StyleSheet.create({
     deleteButtonText: {
         fontSize: 16,
         fontWeight: 'bold',
+    },
+    deleteButtonContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     inputContainer: {
         marginBottom: 20,
