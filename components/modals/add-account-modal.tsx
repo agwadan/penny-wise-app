@@ -249,7 +249,10 @@ export function AddAccountModal({ onSubmit, initialData, onDelete }: AddAccountM
             onPress={onDelete}
             disabled={isSubmitting}
           >
-            <Text style={[styles.deleteButtonText, { color: colors.error }]}>🗑️ Delete Account</Text>
+            <View style={styles.deleteButtonContent}>
+              <Ionicons name="trash-outline" size={20} color={colors.error} style={{ marginRight: 8 }} />
+              <Text style={[styles.deleteButtonText, { color: colors.error }]}>Delete Account</Text>
+            </View>
           </Pressable>
         )}
       </ScrollView>
@@ -357,6 +360,11 @@ const styles = StyleSheet.create({
   deleteButtonText: {
     fontSize: 16,
     fontWeight: '700',
+  },
+  deleteButtonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   error: {
     fontSize: 12,

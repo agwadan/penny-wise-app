@@ -1,6 +1,6 @@
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import React from 'react';
+import { Ionicons } from '@expo/vector-icons';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 
 interface NotesInputProps {
@@ -16,7 +16,7 @@ export function NotesInput({ value, onChange }: NotesInputProps) {
         <View style={[styles.container, { borderBottomColor: colors.divider }]}>
             <View style={styles.topRow}>
                 <View style={styles.left}>
-                    <Text style={styles.icon}>📝</Text>
+                    <Ionicons name="document-text-outline" size={20} color={colors.textSecondary} />
                     <Text style={[styles.label, { color: colors.textSecondary }]}>Notes</Text>
                 </View>
                 <Text style={[styles.charCount, { color: colors.textMuted }]}>
@@ -53,9 +53,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         gap: 12,
-    },
-    icon: {
-        fontSize: 20,
     },
     label: {
         fontSize: 15,
