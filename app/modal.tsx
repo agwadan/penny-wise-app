@@ -13,23 +13,33 @@ export default function ModalScreen() {
 
       // Convert IDs to numbers
       const accountId = parseInt(data.accountId, 10);
-      const categoryId = parseInt(data.categoryId, 10);
+      const categoryId = data.categoryId ? parseInt(data.categoryId, 10) : null;
+      const toAccountId = data.toAccountId ? parseInt(data.toAccountId, 10) : null;
 
-      if (isNaN(accountId) || isNaN(categoryId)) {
-        Alert.alert('Error', 'Invalid account or category ID');
+      if (isNaN(accountId)) {
+        Alert.alert('Error', 'Invalid account ID');
+        return;
+      }
+
+      if (data.type !== 'transfer' && (categoryId === null || isNaN(categoryId))) {
+        Alert.alert('Error', 'Invalid category ID');
         return;
       }
 
       // Prepare request body matching the API endpoint format
-      const requestData = {
+      const requestData: any = {
         account: accountId,
-        category: categoryId,
+        category: data.type === 'transfer' ? null : categoryId,
         transaction_type: data.type,
-        amount: data.amount,
+        amount: data.amount.toString(), // API example shows string
         description: data.notes || '',
         date: formattedDate,
         currency: data.currency,
       };
+
+      if (data.type === 'transfer' && toAccountId) {
+        requestData.to_account = toAccountId;
+      }
 
       await addTransaction(requestData);
       Alert.alert('Success', 'Transaction added successfully');

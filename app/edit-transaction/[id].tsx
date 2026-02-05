@@ -4,7 +4,7 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import { TransactionFormData } from '@/types';
 import { deleteTransaction, getTransaction, handleApiError, updateTransaction } from '@/utils/api';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, StyleSheet, View } from 'react-native';
 
 export default function EditTransactionScreen() {
@@ -26,8 +26,9 @@ export default function EditTransactionScreen() {
         setInitialData({
           type: data.transaction_type,
           amount: parseFloat(data.amount),
-          categoryId: data.category.toString(),
+          categoryId: data.category ? data.category.toString() : '',
           accountId: data.account.toString(),
+          toAccountId: data.to_account ? data.to_account.toString() : '',
           date: new Date(data.date),
           notes: data.description || '',
           currency: data.currency,
@@ -50,15 +51,23 @@ export default function EditTransactionScreen() {
       const date = new Date(data.date);
       const formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 
-      const requestData = {
-        account: parseInt(data.accountId, 10),
-        category: parseInt(data.categoryId, 10),
+      const accountId = parseInt(data.accountId, 10);
+      const categoryId = data.categoryId ? parseInt(data.categoryId, 10) : null;
+      const toAccountId = data.toAccountId ? parseInt(data.toAccountId, 10) : null;
+
+      const requestData: any = {
+        account: accountId,
+        category: data.type === 'transfer' ? null : categoryId,
         transaction_type: data.type,
-        amount: data.amount,
+        amount: data.amount.toString(),
         description: data.notes || '',
         date: formattedDate,
         currency: data.currency,
       };
+
+      if (data.type === 'transfer' && toAccountId) {
+        requestData.to_account = toAccountId;
+      }
 
       await updateTransaction(parseInt(id, 10), requestData);
       Alert.alert('Success', 'Transaction updated successfully');

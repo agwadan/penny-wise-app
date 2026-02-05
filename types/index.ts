@@ -23,7 +23,7 @@ export interface Category {
     isDefault: boolean;
 }
 
-export type TransactionType = 'expense' | 'income';
+export type TransactionType = 'expense' | 'income' | 'transfer';
 
 export interface Transaction {
     id: string;
@@ -52,6 +52,7 @@ export interface TransactionFormData {
     amount: number;
     categoryId: string;
     accountId: string;
+    toAccountId?: string;
     date: Date;
     notes: string;
     currency?: Currency;

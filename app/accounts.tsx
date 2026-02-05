@@ -5,7 +5,7 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import { API_ENDPOINTS, apiClient, handleApiError } from '@/utils/api';
 import { Ionicons } from '@expo/vector-icons';
 import { router, useFocusEffect } from 'expo-router';
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -31,7 +31,7 @@ interface AccountsResponse {
   count: number;
   next: string | null;
   previous: string | null;
-  results: Account[];
+  data: Account[];
 }
 
 export default function AccountsScreen() {
@@ -52,7 +52,8 @@ export default function AccountsScreen() {
 
     try {
       const response = await apiClient.get<AccountsResponse>(API_ENDPOINTS.ACCOUNTS);
-      setAccounts(response.data.results);
+
+      setAccounts(response.data);
     } catch (err) {
       setError(handleApiError(err));
     } finally {
@@ -167,7 +168,7 @@ export default function AccountsScreen() {
             <ThemedText style={styles.retryButtonText}>Retry</ThemedText>
           </TouchableOpacity>
         </View>
-      ) : accounts.length === 0 ? (
+      ) : accounts?.length === 0 ? (
         <View style={styles.centerContainer}>
           <Ionicons name="wallet-outline" size={64} color={colors.textMuted} />
           <ThemedText style={styles.emptyText}>No accounts found</ThemedText>
