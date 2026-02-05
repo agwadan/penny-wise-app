@@ -1,6 +1,5 @@
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import React from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 
 interface AmountInputProps {
@@ -8,13 +7,23 @@ interface AmountInputProps {
     onChange: (value: number) => void;
     error?: string;
     currency?: string;
-    type?: 'expense' | 'income';
+    type?: 'expense' | 'income' | 'transfer';
 }
 
 export function AmountInput({ value, onChange, error, currency = 'UGX', type = 'expense' }: AmountInputProps) {
     const colorScheme = useColorScheme();
     const colors = Colors[colorScheme ?? 'light'];
-    const amountColor = type === 'expense' ? '#FF4F6E' : '#27CDA1';
+
+    const getAmountColor = () => {
+        switch (type) {
+            case 'expense': return '#FF4F6E';
+            case 'income': return '#27CDA1';
+            case 'transfer': return colors.primary;
+            default: return '#FF4F6E';
+        }
+    };
+
+    const amountColor = getAmountColor();
 
     const currencySymbols: Record<string, string> = {
         USD: '$',

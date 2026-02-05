@@ -17,9 +17,17 @@ interface AccountSelectorProps {
     value: string;
     onChange: (account: any) => void;
     error?: string;
+    label?: string;
+    placeholder?: string;
 }
 
-export function AccountSelector({ value, onChange, error }: AccountSelectorProps) {
+export function AccountSelector({
+    value,
+    onChange,
+    error,
+    label = "Account",
+    placeholder = "Select an account"
+}: AccountSelectorProps) {
     const colorScheme = useColorScheme();
     const colors = Colors[colorScheme ?? 'light'];
     const [accounts, setAccounts] = useState<any[]>([]);
@@ -79,7 +87,7 @@ export function AccountSelector({ value, onChange, error }: AccountSelectorProps
 
     return (
         <View style={styles.container}>
-            <Text style={[styles.label, { color: colors.textSecondary }]}>Account</Text>
+            <Text style={[styles.label, { color: colors.textSecondary }]}>{label}</Text>
 
             <Pressable
                 style={[
@@ -112,7 +120,7 @@ export function AccountSelector({ value, onChange, error }: AccountSelectorProps
                         </>
                     ) : (
                         <Text style={[styles.placeholder, { color: colors.textMuted }]}>
-                            Select an account
+                            {placeholder}
                         </Text>
                     )}
                 </View>
@@ -132,7 +140,7 @@ export function AccountSelector({ value, onChange, error }: AccountSelectorProps
                     />
                     <View style={[styles.modalContent, { backgroundColor: colors.background }]}>
                         <View style={[styles.modalHeader, { borderBottomColor: colors.divider }]}>
-                            <Text style={[styles.modalTitle, { color: colors.text }]}>Select Account</Text>
+                            <Text style={[styles.modalTitle, { color: colors.text }]}>Select {label}</Text>
                             <Pressable onPress={() => setIsModalVisible(false)}>
                                 <Ionicons name="close" size={24} color={colors.text} />
                             </Pressable>

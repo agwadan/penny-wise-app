@@ -22,12 +22,21 @@ export function TransactionTypeToggle({ value, onChange }: TransactionTypeToggle
 
     // Adjust container width to 32px padding (16 on each side)
     const toggleWidth = windowWidth - 32;
-    const sliderWidth = (toggleWidth - 8) / 2; // 4px padding on each side of slider
+    const sliderWidth = (toggleWidth - 8) / 3; // 4px padding on each side of slider, now 3 options
 
-    const slidePosition = useSharedValue(value === 'expense' ? 0 : 1);
+    const getPositionIndex = (type: TransactionType) => {
+        switch (type) {
+            case 'expense': return 0;
+            case 'income': return 1;
+            case 'transfer': return 2;
+            default: return 0;
+        }
+    };
+
+    const slidePosition = useSharedValue(getPositionIndex(value));
 
     React.useEffect(() => {
-        slidePosition.value = withSpring(value === 'expense' ? 0 : 1, {
+        slidePosition.value = withSpring(getPositionIndex(value), {
             damping: 25,
             stiffness: 200,
         });
@@ -44,13 +53,22 @@ export function TransactionTypeToggle({ value, onChange }: TransactionTypeToggle
         }
     };
 
+    const getSliderColor = () => {
+        switch (value) {
+            case 'expense': return '#FF4F6E';
+            case 'income': return '#27CDA1';
+            case 'transfer': return colors.primary;
+            default: return '#FF4F6E';
+        }
+    };
+
     return (
         <View style={[styles.container, { backgroundColor: colors.cardBackground }]}>
             <Animated.View
                 style={[
                     styles.slider,
                     {
-                        backgroundColor: value === 'expense' ? '#FF4F6E' : '#27CDA1',
+                        backgroundColor: getSliderColor(),
                         width: sliderWidth
                     },
                     animatedStyle,
@@ -66,6 +84,12 @@ export function TransactionTypeToggle({ value, onChange }: TransactionTypeToggle
             <Pressable style={styles.option} onPress={() => handlePress('income')}>
                 <Text style={[styles.optionText, { color: value === 'income' ? '#FFFFFF' : colors.textSecondary }]}>
                     Income
+                </Text>
+            </Pressable>
+
+            <Pressable style={styles.option} onPress={() => handlePress('transfer')}>
+                <Text style={[styles.optionText, { color: value === 'transfer' ? '#FFFFFF' : colors.textSecondary }]}>
+                    Transfer
                 </Text>
             </Pressable>
         </View>

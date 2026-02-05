@@ -36,27 +36,36 @@ export function AddTransactionModal({ onSubmit, initialData, onDelete }: AddTran
         amount: 0,
         categoryId: '',
         accountId: '',
+        toAccountId: '',
         date: new Date(),
         notes: '',
         currency: 'UGX',
     });
 
     const [isSubmitting, setIsSubmitting] = React.useState(false);
-    const [errors, setErrors] = React.useState<Partial<Record<keyof TransactionFormData, string>>>({});
+    const [errors, setErrors] = React.useState<Partial<Record<keyof TransactionFormData | 'toAccountId', string>>>({});
 
     const validateForm = (): boolean => {
-        const newErrors: Partial<Record<keyof TransactionFormData, string>> = {};
+        const newErrors: Partial<Record<keyof TransactionFormData | 'toAccountId', string>> = {};
 
         if (!formData.amount || formData.amount <= 0) {
             newErrors.amount = 'Please enter a valid amount';
         }
 
-        if (!formData.categoryId) {
+        if (formData.type !== 'transfer' && !formData.categoryId) {
             newErrors.categoryId = 'Please select a category';
         }
 
         if (!formData.accountId) {
-            newErrors.accountId = 'Please select an account';
+            newErrors.accountId = formData.type === 'transfer' ? 'Please select source account' : 'Please select an account';
+        }
+
+        if (formData.type === 'transfer' && !formData.toAccountId) {
+            newErrors.toAccountId = 'Please select destination account';
+        }
+
+        if (formData.type === 'transfer' && formData.accountId === formData.toAccountId) {
+            newErrors.toAccountId = 'Source and destination accounts must be different';
         }
 
         setErrors(newErrors);
@@ -67,7 +76,12 @@ export function AddTransactionModal({ onSubmit, initialData, onDelete }: AddTran
         if (validateForm()) {
             setIsSubmitting(true);
             try {
-                await onSubmit(formData);
+                // If it's a transfer, ensure categoryId is empty
+                const submissionData = {
+                    ...formData,
+                    categoryId: formData.type === 'transfer' ? '' : formData.categoryId
+                };
+                await onSubmit(submissionData);
                 // Navigation is handled by the parent on success
             } catch (error) {
                 // Error handling is managed by the parent via alerts
@@ -81,6 +95,15 @@ export function AddTransactionModal({ onSubmit, initialData, onDelete }: AddTran
 
     const handleCancel = () => {
         router.back();
+    };
+
+    const getSubmitButtonColor = () => {
+        switch (formData.type) {
+            case 'expense': return '#FF4F6E';
+            case 'income': return '#27CDA1';
+            case 'transfer': return colors.primary;
+            default: return '#FF4F6E';
+        }
     };
 
     return (
@@ -131,17 +154,29 @@ export function AddTransactionModal({ onSubmit, initialData, onDelete }: AddTran
 
                 {/* 3. Account Selector */}
                 <AccountSelector
+                    label={formData.type === 'transfer' ? "From Account" : "Account"}
                     value={formData.accountId}
                     onChange={(account) => setFormData({ ...formData, accountId: account.id.toString(), currency: account.currency })}
                     error={errors.accountId}
                 />
 
+                {formData.type === 'transfer' && (
+                    <AccountSelector
+                        label="To Account"
+                        value={formData.toAccountId || ''}
+                        onChange={(account) => setFormData({ ...formData, toAccountId: account.id.toString() })}
+                        error={errors.toAccountId as string}
+                    />
+                )}
+
                 {/* 4. Category Selector */}
-                <CategorySelector
-                    value={formData.categoryId}
-                    onChange={(categoryId) => setFormData({ ...formData, categoryId })}
-                    error={errors.categoryId}
-                />
+                {formData.type !== 'transfer' && (
+                    <CategorySelector
+                        value={formData.categoryId}
+                        onChange={(categoryId) => setFormData({ ...formData, categoryId })}
+                        error={errors.categoryId}
+                    />
+                )}
 
                 {/* 5. Date and Notes (integrated rows) */}
                 <DatePickerField
@@ -157,7 +192,7 @@ export function AddTransactionModal({ onSubmit, initialData, onDelete }: AddTran
                 <Pressable
                     style={[
                         styles.submitButton,
-                        { backgroundColor: formData.type === 'expense' ? '#FF4F6E' : '#27CDA1', opacity: isSubmitting ? 0.7 : 1 },
+                        { backgroundColor: getSubmitButtonColor(), opacity: isSubmitting ? 0.7 : 1 },
                     ]}
                     onPress={handleSubmit}
                     disabled={isSubmitting}

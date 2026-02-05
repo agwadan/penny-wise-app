@@ -143,9 +143,10 @@ export const handleApiError = (error: any): string => {
  -----------------------------------*/
 export interface AddTransactionRequest {
   account: number;
-  category: number;
-  transaction_type: 'expense' | 'income';
-  amount: number;
+  to_account?: number;
+  category?: number | null;
+  transaction_type: 'expense' | 'income' | 'transfer';
+  amount: number | string;
   description: string;
   date: string; // Format: YYYY-MM-DD
   currency?: string;
