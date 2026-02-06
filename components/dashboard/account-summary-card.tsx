@@ -2,9 +2,10 @@ import { ThemedText } from '@/components/themed-text';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { getTotalBalance } from '@/utils';
+import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 
 interface AccountSummaryCardProps {
     refreshTrigger?: boolean;
@@ -20,6 +21,7 @@ export function AccountSummaryCard({
     const [totalBalance, setTotalBalance] = useState<number>(0);
     const [accountCount, setAccountCount] = useState<number>(0);
     const [loading, setLoading] = useState(true);
+    const [isBalanceVisible, setIsBalanceVisible] = useState(true);
 
     const fetchData = async () => {
         try {
@@ -47,6 +49,11 @@ export function AccountSummaryCard({
             KES: 'KSh',
             UGX: 'UGX',
         };
+
+        if (!isBalanceVisible) {
+            return `******`;
+        }
+
         return `${currencySymbols[currency]} ${amount.toLocaleString('en-US', {
             minimumFractionDigits: 0,
             maximumFractionDigits: 0,
@@ -60,6 +67,19 @@ export function AccountSummaryCard({
             end={{ x: 1, y: 1 }}
             style={styles.container}
         >
+            <TouchableOpacity
+                onPress={() => setIsBalanceVisible(!isBalanceVisible)}
+                style={styles.visibilityToggle}
+                activeOpacity={0.7}
+            >
+                <Ionicons
+                    name={isBalanceVisible ? 'eye-off-outline' : 'eye-outline'}
+                    size={20}
+                    color="#FFFFFF"
+                    style={{ opacity: 0.8 }}
+                />
+            </TouchableOpacity>
+
             <View style={styles.content}>
                 <ThemedText style={styles.label}>Total Balance</ThemedText>
 
@@ -77,15 +97,16 @@ export function AccountSummaryCard({
 
 const styles = StyleSheet.create({
     container: {
-        borderRadius: 20,
+        borderRadius: 24,
         padding: 24,
         marginHorizontal: 16,
         marginTop: 16,
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.15,
-        shadowRadius: 12,
-        elevation: 8,
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.2,
+        shadowRadius: 16,
+        elevation: 10,
+        position: 'relative',
     },
     content: {
         alignItems: 'center',
@@ -97,11 +118,19 @@ const styles = StyleSheet.create({
         opacity: 0.9,
         marginBottom: 8,
     },
+    visibilityToggle: {
+        position: 'absolute',
+        top: 16,
+        right: 16,
+        padding: 8,
+        zIndex: 10,
+    },
     balance: {
-        fontSize: 28,
+        fontSize: 32,
         fontWeight: 'bold',
         color: '#FFFFFF',
         paddingBottom: 8,
+        letterSpacing: 0.5,
     },
     accountCount: {
         fontSize: 14,
@@ -109,3 +138,4 @@ const styles = StyleSheet.create({
         opacity: 0.8,
     },
 });
+
