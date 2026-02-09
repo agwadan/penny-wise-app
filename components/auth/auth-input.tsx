@@ -1,7 +1,7 @@
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Ionicons } from '@expo/vector-icons';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   StyleSheet,
   TextInput,
@@ -92,34 +92,34 @@ export function AuthInput({
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 20,
+    marginBottom: 14,
   },
   label: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '600',
-    marginBottom: 8,
+    marginBottom: 6,
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 2,
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    height: 56,
+    borderWidth: 1.5,
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    height: 48,
   },
   icon: {
-    marginRight: 12,
+    marginRight: 10,
   },
   input: {
-    fontSize: 16,
+    fontSize: 15,
     paddingVertical: 0,
   },
   eyeIcon: {
     padding: 4,
   },
   errorText: {
-    fontSize: 12,
-    marginTop: 6,
+    fontSize: 11,
+    marginTop: 4,
     marginLeft: 4,
   },
 });

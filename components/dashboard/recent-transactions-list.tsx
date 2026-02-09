@@ -6,7 +6,7 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Transaction } from '@/types';
 import { fetchData, getCategories } from '@/utils';
 import { router } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 interface RecentTransactionsListProps {
@@ -159,12 +159,14 @@ const styles = StyleSheet.create({
         marginHorizontal: 16,
         marginTop: 16,
         borderRadius: 16,
-        padding: 16,
+        paddingHorizontal: 16,
+        paddingTop: 16,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 8,
         elevation: 3,
+        marginBottom: 16,
     },
     header: {
         flexDirection: 'row',

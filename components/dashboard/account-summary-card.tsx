@@ -1,11 +1,14 @@
 import { ThemedText } from '@/components/themed-text';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { RootState } from '@/store';
+import { toggleBalanceVisibility } from '@/store/showText';
 import { getTotalBalance } from '@/utils';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useEffect, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
 
 interface AccountSummaryCardProps {
     refreshTrigger?: boolean;
@@ -18,10 +21,11 @@ export function AccountSummaryCard({
 }: AccountSummaryCardProps) {
     const colorScheme = useColorScheme();
     const colors = Colors[colorScheme ?? 'light'];
+    const dispatch = useDispatch();
+    const isBalanceVisible = useSelector((state: RootState) => state.ui.isBalanceVisible);
     const [totalBalance, setTotalBalance] = useState<number>(0);
     const [accountCount, setAccountCount] = useState<number>(0);
     const [loading, setLoading] = useState(true);
-    const [isBalanceVisible, setIsBalanceVisible] = useState(true);
 
     const fetchData = async () => {
         try {
@@ -68,7 +72,7 @@ export function AccountSummaryCard({
             style={styles.container}
         >
             <TouchableOpacity
-                onPress={() => setIsBalanceVisible(!isBalanceVisible)}
+                onPress={() => dispatch(toggleBalanceVisibility())}
                 style={styles.visibilityToggle}
                 activeOpacity={0.7}
             >

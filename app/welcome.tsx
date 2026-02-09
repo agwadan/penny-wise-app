@@ -6,7 +6,6 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import React from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 
 export default function WelcomeScreen() {
@@ -136,79 +135,78 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   hero: {
-    paddingTop: 80,
-    paddingBottom: 60,
-    paddingHorizontal: 24,
-    alignItems: 'center',
-    borderBottomLeftRadius: 32,
-    borderBottomRightRadius: 32,
+    paddingTop: 60,
+    paddingBottom: 40,
+    paddingHorizontal: 20,
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
   },
   logoContainer: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
+    width: 100,
+    height: 100,
+    borderRadius: 50,
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 24,
+    marginBottom: 20,
   },
   appName: {
-    fontSize: 40,
+    fontSize: 32,
     fontWeight: 'bold',
     color: '#FFFFFF',
-    marginBottom: 8,
+    marginBottom: 4,
   },
   tagline: {
-    fontSize: 18,
+    fontSize: 16,
     color: '#FFFFFF',
     opacity: 0.9,
     textAlign: 'center',
   },
   featuresContainer: {
-    padding: 24,
-    paddingTop: 40,
+    padding: 20,
+    paddingTop: 32,
   },
   featuresTitle: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 24,
+    marginBottom: 20,
     textAlign: 'center',
   },
   featureCard: {
     flexDirection: 'row',
-    padding: 20,
-    borderRadius: 16,
+    padding: 16,
+    borderRadius: 14,
     borderWidth: 1,
-    marginBottom: 16,
+    marginBottom: 12,
   },
   featureIconContainer: {
-    width: 56,
-    height: 56,
-    borderRadius: 12,
+    width: 48,
+    height: 48,
+    borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 16,
+    marginRight: 12,
   },
   featureContent: {
     flex: 1,
     justifyContent: 'center',
   },
   featureTitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '600',
-    marginBottom: 4,
+    marginBottom: 2,
   },
   featureDescription: {
-    fontSize: 14,
-    lineHeight: 20,
+    fontSize: 13,
+    lineHeight: 18,
   },
   ctaContainer: {
-    padding: 24,
-    paddingTop: 16,
-    paddingBottom: 40,
+    padding: 20,
+    paddingTop: 8,
+    paddingBottom: 32,
   },
   loginButton: {
-    marginTop: 12,
+    marginTop: 8,
   },
   disclaimer: {
     fontSize: 12,
