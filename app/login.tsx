@@ -5,9 +5,10 @@ import { ThemedView } from '@/components/themed-view';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { API_ENDPOINTS, handleApiError, postData, saveAuthData, validateLoginData } from '@/utils';
+import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Alert,
   KeyboardAvoidingView,
@@ -101,7 +102,10 @@ export default function LoginScreen() {
             end={{ x: 1, y: 1 }}
             style={styles.header}
           >
-            <ThemedText style={styles.headerTitle}>Welcome Back! 👋</ThemedText>
+            <View style={styles.headerTitleRow}>
+              <ThemedText style={styles.headerTitle}>Welcome Back!</ThemedText>
+              <Ionicons name="log-in-outline" size={28} color="#FFFFFF" style={styles.headerIcon} />
+            </View>
             <ThemedText style={styles.headerSubtitle}>
               Sign in to continue managing your finances
             </ThemedText>
@@ -154,31 +158,6 @@ export default function LoginScreen() {
               icon="log-in-outline"
             />
 
-            {/* Divider */}
-            <View style={styles.dividerContainer}>
-              <View style={[styles.divider, { backgroundColor: colors.divider }]} />
-              <ThemedText style={[styles.dividerText, { color: colors.textSecondary }]}>
-                OR
-              </ThemedText>
-              <View style={[styles.divider, { backgroundColor: colors.divider }]} />
-            </View>
-
-            {/* Social Login Buttons */}
-            <AuthButton
-              title="Continue with Google"
-              variant="outline"
-              icon="logo-google"
-              onPress={() => console.log('Google login')}
-              style={styles.socialButton}
-            />
-
-            <AuthButton
-              title="Continue with Apple"
-              variant="outline"
-              icon="logo-apple"
-              onPress={() => console.log('Apple login')}
-            />
-
             {/* Sign Up Link */}
             <View style={styles.signupContainer}>
               <ThemedText style={[styles.signupText, { color: colors.textSecondary }]}>
@@ -209,57 +188,48 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingTop: 60,
-    paddingBottom: 40,
-    paddingHorizontal: 24,
-    borderBottomLeftRadius: 32,
-    borderBottomRightRadius: 32,
+    paddingBottom: 24,
+    paddingHorizontal: 20,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
   },
   headerTitle: {
-    fontSize: 32,
+    fontSize: 24,
     fontWeight: 'bold',
     color: '#FFFFFF',
-    marginBottom: 8,
+  },
+  headerTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 4,
+    gap: 8,
+  },
+  headerIcon: {
+    marginTop: 2,
   },
   headerSubtitle: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#FFFFFF',
     opacity: 0.9,
   },
   formContainer: {
-    padding: 24,
-    paddingTop: 32,
+    padding: 20,
+    paddingTop: 20,
   },
   forgotPassword: {
     alignSelf: 'flex-end',
-    marginBottom: 24,
+    marginBottom: 16,
     marginTop: -8,
   },
   forgotPasswordText: {
     fontSize: 14,
     fontWeight: '600',
   },
-  dividerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: 32,
-  },
-  divider: {
-    flex: 1,
-    height: 1,
-  },
-  dividerText: {
-    marginHorizontal: 16,
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  socialButton: {
-    marginBottom: 12,
-  },
   signupContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 32,
+    marginTop: 20,
   },
   signupText: {
     fontSize: 14,

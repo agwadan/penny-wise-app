@@ -5,10 +5,11 @@ import { ThemedView } from '@/components/themed-view';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { API_ENDPOINTS, handleApiError, postData, saveAuthData, validateSignupData } from '@/utils';
+import { Ionicons } from '@expo/vector-icons';
 import Constants from 'expo-constants';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Alert,
   KeyboardAvoidingView,
@@ -116,7 +117,10 @@ export default function SignupScreen() {
             end={{ x: 1, y: 1 }}
             style={styles.header}
           >
-            <ThemedText style={styles.headerTitle}>Create Account 🎉</ThemedText>
+            <View style={styles.headerTitleRow}>
+              <ThemedText style={styles.headerTitle}>Create Account</ThemedText>
+              <Ionicons name="sparkles-outline" size={24} color="#FFFFFF" style={styles.headerIcon} />
+            </View>
             <ThemedText style={styles.headerSubtitle}>
               Join us to start your financial journey
             </ThemedText>
@@ -215,11 +219,17 @@ export default function SignupScreen() {
               </View>
               <ThemedText style={[styles.termsText, { color: colors.textSecondary }]}>
                 I agree to the{' '}
-                <ThemedText style={[styles.termsLink, { color: colors.primary }]}>
+                <ThemedText
+                  style={[styles.termsLink, { color: colors.primary }]}
+                  onPress={() => router.push('/terms')}
+                >
                   Terms & Conditions
                 </ThemedText>{' '}
                 and{' '}
-                <ThemedText style={[styles.termsLink, { color: colors.primary }]}>
+                <ThemedText
+                  style={[styles.termsLink, { color: colors.primary }]}
+                  onPress={() => router.push('/privacy')}
+                >
                   Privacy Policy
                 </ThemedText>
               </ThemedText>
@@ -230,31 +240,6 @@ export default function SignupScreen() {
               onPress={handleSignup}
               loading={loading}
               icon="person-add-outline"
-            />
-
-            {/* Divider */}
-            <View style={styles.dividerContainer}>
-              <View style={[styles.divider, { backgroundColor: colors.divider }]} />
-              <ThemedText style={[styles.dividerText, { color: colors.textSecondary }]}>
-                OR
-              </ThemedText>
-              <View style={[styles.divider, { backgroundColor: colors.divider }]} />
-            </View>
-
-            {/* Social Signup Buttons */}
-            <AuthButton
-              title="Sign up with Google"
-              variant="outline"
-              icon="logo-google"
-              onPress={() => console.log('Google signup')}
-              style={styles.socialButton}
-            />
-
-            <AuthButton
-              title="Sign up with Apple"
-              variant="outline"
-              icon="logo-apple"
-              onPress={() => console.log('Apple signup')}
             />
 
             {/* Login Link */}
@@ -287,31 +272,39 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingTop: 60,
-    paddingBottom: 40,
-    paddingHorizontal: 24,
-    borderBottomLeftRadius: 32,
-    borderBottomRightRadius: 32,
+    paddingBottom: 24,
+    paddingHorizontal: 20,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
   },
   headerTitle: {
-    fontSize: 32,
+    fontSize: 24,
     fontWeight: 'bold',
     color: '#FFFFFF',
-    marginBottom: 8,
+  },
+  headerTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 4,
+    gap: 8,
+  },
+  headerIcon: {
+    marginTop: 2,
   },
   headerSubtitle: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#FFFFFF',
     opacity: 0.9,
   },
   formContainer: {
-    padding: 24,
-    paddingTop: 32,
+    padding: 20,
+    paddingTop: 12,
   },
   termsContainer: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    marginBottom: 24,
-    marginTop: -8,
+    marginBottom: 12,
+    marginTop: -4,
   },
   checkbox: {
     width: 24,
@@ -335,30 +328,14 @@ const styles = StyleSheet.create({
   },
   termsLink: {
     fontWeight: '600',
-  },
-  dividerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: 32,
-  },
-  divider: {
-    flex: 1,
-    height: 1,
-  },
-  dividerText: {
-    marginHorizontal: 16,
     fontSize: 14,
-    fontWeight: '600',
-  },
-  socialButton: {
-    marginBottom: 12,
   },
   loginContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 32,
-    marginBottom: 24,
+    marginTop: 20,
+    marginBottom: 16,
   },
   loginText: {
     fontSize: 14,

@@ -33,13 +33,15 @@ export default function RootLayout() {
         const isWelcomePage = segments[0] === 'welcome';
         const isLoginPage = segments[0] === 'login';
         const isSignupPage = segments[0] === 'signup';
-        const inAuthGroup = !isWelcomePage && !isLoginPage && !isSignupPage;
+        const isTermsPage = segments[0] === 'terms';
+        const isPrivacyPage = segments[0] === 'privacy';
+        const inAuthGroup = !isWelcomePage && !isLoginPage && !isSignupPage && !isTermsPage && !isPrivacyPage;
 
         if (!authenticated && inAuthGroup) {
           // Redirect to welcome if not logged in and trying to access protected routes
           router.replace('/welcome');
         } else if (authenticated && (isWelcomePage || isLoginPage || isSignupPage)) {
-          // Redirect to dashboard if logged in and on auth pages
+          // Redirect to dashboard if logged in and on auth pages (but allow terms/privacy)
           router.replace('/');
         }
       } catch (e) {
@@ -71,6 +73,8 @@ export default function RootLayout() {
             <Stack.Screen name="index" options={{ headerShown: false }} />
             <Stack.Screen name="accounts" options={{ headerShown: false }} />
             <Stack.Screen name="transactions" options={{ headerShown: false }} />
+            <Stack.Screen name="terms" options={{ headerShown: false }} />
+            <Stack.Screen name="privacy" options={{ headerShown: false }} />
             <Stack.Screen
               name="add-account"
               options={{
