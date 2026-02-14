@@ -31,9 +31,6 @@ export function CategorySelector({ value, onChange, error }: CategorySelectorPro
         const fetchCategories = async () => {
             try {
                 const data = await getCategories();
-
-                console.log('Categories:', JSON.stringify(data, null, 2));
-
                 setCategories(data.results || data);
             } catch (error) {
                 console.error('Failed to fetch categories:', error);

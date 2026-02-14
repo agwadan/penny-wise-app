@@ -5,8 +5,8 @@ import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { API_ENDPOINTS, apiClient, getCategories, handleApiError } from '@/utils/api';
 import { Ionicons } from '@expo/vector-icons';
-import { router, useFocusEffect } from 'expo-router';
-import React, { useCallback, useState } from 'react';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { useCallback, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -35,10 +35,12 @@ interface TransactionsResponse {
 }
 
 export default function TransactionsScreen() {
+  const { category: categoryFilter } = useLocalSearchParams<{ category?: string }>();
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [allTransactions, setAllTransactions] = useState<Transaction[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -56,8 +58,16 @@ export default function TransactionsScreen() {
         apiClient.get<TransactionsResponse>(API_ENDPOINTS.TRANSACTIONS),
         getCategories()
       ]);
-      setTransactions(transResponse.data.results);
+
+      const results = transResponse.data.results;
+      setAllTransactions(results);
       setCategories(catsData.results || catsData);
+
+      if (categoryFilter) {
+        setTransactions(results.filter(t => t.category_name === categoryFilter));
+      } else {
+        setTransactions(results);
+      }
     } catch (err) {
       setError(handleApiError(err));
     } finally {
@@ -136,7 +146,9 @@ export default function TransactionsScreen() {
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <Ionicons name="chevron-back" size={24} color={colors.text} />
         </TouchableOpacity>
-        <ThemedText style={styles.headerTitle}>Transactions</ThemedText>
+        <ThemedText style={styles.headerTitle}>
+          {categoryFilter ? `${categoryFilter}` : 'Transactions'}
+        </ThemedText>
         <TouchableOpacity style={styles.addButton} onPress={() => router.push('/modal')}>
           <Ionicons name="add" size={24} color={colors.text} />
         </TouchableOpacity>

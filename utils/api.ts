@@ -214,8 +214,6 @@ export const getAccount = async (id: number) => {
 export const updateAccount = async (id: number, data: AccountFormData) => {
   try {
     const response = await apiClient.put(API_ENDPOINTS.ACCOUNT_DETAIL(id), data);
-    console.log(`=======> response`);
-    console.log(JSON.stringify(response.data, null, 2));
     return response.data;
   } catch (error) {
     throw error;

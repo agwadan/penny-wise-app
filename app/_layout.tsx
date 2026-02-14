@@ -73,6 +73,7 @@ export default function RootLayout() {
             <Stack.Screen name="index" options={{ headerShown: false }} />
             <Stack.Screen name="accounts" options={{ headerShown: false }} />
             <Stack.Screen name="transactions" options={{ headerShown: false }} />
+            <Stack.Screen name="category-spending" options={{ headerShown: false }} />
             <Stack.Screen name="terms" options={{ headerShown: false }} />
             <Stack.Screen name="privacy" options={{ headerShown: false }} />
             <Stack.Screen

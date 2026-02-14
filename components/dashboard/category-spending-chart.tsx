@@ -4,8 +4,9 @@ import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { CategorySpending } from '@/types';
 import { getCategorySpending } from '@/utils/api';
-import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Dimensions, StyleSheet, View } from 'react-native';
+import { router } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, Dimensions, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { PieChart } from 'react-native-chart-kit';
 
 interface CategorySpendingChartProps {
@@ -79,28 +80,33 @@ export function CategorySpendingChart({ refreshTrigger = false }: CategorySpendi
   }
 
   return (
-    <ThemedView style={[styles.container, { backgroundColor: colors.cardBackground }]}>
-      <ThemedText style={styles.title}>Spending by Category</ThemedText>
-      <ThemedText style={[styles.subtitle, { color: colors.textSecondary }]}>
-        Past 30 Days (Total: UGX {totalSpending.toLocaleString()})
-      </ThemedText>
+    <TouchableOpacity
+      activeOpacity={0.9}
+      onPress={() => router.push('/category-spending')}
+    >
+      <ThemedView style={[styles.container, { backgroundColor: colors.cardBackground }]}>
+        <ThemedText style={styles.title}>Spending by Category</ThemedText>
+        <ThemedText style={[styles.subtitle, { color: colors.textSecondary }]}>
+          Past 30 Days (Total: UGX {totalSpending.toLocaleString()})
+        </ThemedText>
 
-      <View style={styles.chartContainer}>
-        <PieChart
-          data={chartData.map(d => ({
-            ...d,
-            population: d.amount,
-          }))}
-          width={screenWidth - 64}
-          height={180}
-          chartConfig={chartConfig}
-          accessor="population"
-          backgroundColor="transparent"
-          paddingLeft="15"
-          absolute={false} // This will show percentage instead of the absolute amount
-        />
-      </View>
-    </ThemedView>
+        <View style={styles.chartContainer}>
+          <PieChart
+            data={chartData.map(d => ({
+              ...d,
+              population: d.amount,
+            }))}
+            width={screenWidth - 64}
+            height={180}
+            chartConfig={chartConfig}
+            accessor="population"
+            backgroundColor="transparent"
+            paddingLeft="15"
+            absolute={false} // This will show percentage instead of the absolute amount
+          />
+        </View>
+      </ThemedView>
+    </TouchableOpacity>
   );
 }
 
