@@ -256,9 +256,9 @@ export const getAccountMetadata = async () => {
   }
 };
 
-export const getCategories = async () => {
+export const getCategories = async (params?: any) => {
   try {
-    const response = await apiClient.get(API_ENDPOINTS.CATEGORIES);
+    const response = await apiClient.get(API_ENDPOINTS.CATEGORIES, { params });
     return response.data;
   } catch (error) {
     throw error;

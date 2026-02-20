@@ -23,15 +23,21 @@ interface CategorySelectorProps {
 export function CategorySelector({ value, onChange, error }: CategorySelectorProps) {
     const colorScheme = useColorScheme();
     const colors = Colors[colorScheme ?? 'light'];
-    const [categories, setCategories] = useState<any[]>([]);
+    const [allCategories, setAllCategories] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isModalVisible, setIsModalVisible] = useState(false);
+
+    // Hierarchy Navigation State
+    const [currentView, setCurrentView] = useState<'parents' | 'subcategories'>('parents');
+    const [selectedParent, setSelectedParent] = useState<any>(null);
 
     useEffect(() => {
         const fetchCategories = async () => {
             try {
+                // Fetch all categories (hierarchy included)
                 const data = await getCategories();
-                setCategories(data.results || data);
+                const flattenedOrNested = data.results || data;
+                setAllCategories(flattenedOrNested);
             } catch (error) {
                 console.error('Failed to fetch categories:', error);
             } finally {
@@ -42,12 +48,45 @@ export function CategorySelector({ value, onChange, error }: CategorySelectorPro
         fetchCategories();
     }, []);
 
-    const selectedCategory = categories.find((cat) => cat.id.toString() === value);
-
-    const handleSelect = (categoryId: string) => {
-        onChange(categoryId);
-        setIsModalVisible(false);
+    // Helper to find selected category in the tree
+    const findCategory = (id: string, searchList: any[]): any => {
+        for (const cat of searchList) {
+            if (cat.id.toString() === id) return cat;
+            if (cat.subcategories && cat.subcategories.length > 0) {
+                const found = findCategory(id, cat.subcategories);
+                if (found) return found;
+            }
+        }
+        return null;
     };
+
+    const selectedCategory = value ? findCategory(value, allCategories) : null;
+
+    const handleSelect = (category: any) => {
+        // If it's a parent and has subcategories, drill down
+        if (!selectedParent && category.subcategories && category.subcategories.length > 0) {
+            setSelectedParent(category);
+            setCurrentView('subcategories');
+        } else {
+            // It's a subcategory or a parent without subs, so select it
+            onChange(category.id.toString());
+            setIsModalVisible(false);
+            // Reset view for next time
+            setTimeout(() => {
+                setCurrentView('parents');
+                setSelectedParent(null);
+            }, 300);
+        }
+    };
+
+    const handleBack = () => {
+        setCurrentView('parents');
+        setSelectedParent(null);
+    };
+
+    const displayedCategories = currentView === 'parents'
+        ? allCategories.filter(c => !c.parent) // Only root parents
+        : selectedParent?.subcategories || [];
 
     return (
         <View style={styles.container}>
@@ -78,8 +117,8 @@ export function CategorySelector({ value, onChange, error }: CategorySelectorPro
                                     size={18}
                                 />
                             </View>
-                            <Text style={[styles.selectedName, { color: colors.text }]}>
-                                {selectedCategory.name}
+                            <Text style={[styles.selectedName, { color: colors.text }]} numberOfLines={1}>
+                                {selectedCategory.full_name || selectedCategory.name}
                             </Text>
                         </>
                     ) : (
@@ -104,7 +143,16 @@ export function CategorySelector({ value, onChange, error }: CategorySelectorPro
                     />
                     <View style={[styles.modalContent, { backgroundColor: colors.background }]}>
                         <View style={[styles.modalHeader, { borderBottomColor: colors.divider }]}>
-                            <Text style={[styles.modalTitle, { color: colors.text }]}>Select Category</Text>
+                            <View style={styles.modalHeaderLeft}>
+                                {currentView === 'subcategories' && (
+                                    <Pressable onPress={handleBack} style={styles.backButton}>
+                                        <Ionicons name="arrow-back" size={24} color={colors.text} />
+                                    </Pressable>
+                                )}
+                                <Text style={[styles.modalTitle, { color: colors.text }]}>
+                                    {currentView === 'parents' ? 'Select Category' : selectedParent?.name}
+                                </Text>
+                            </View>
                             <Pressable onPress={() => setIsModalVisible(false)}>
                                 <Ionicons name="close" size={24} color={colors.text} />
                             </Pressable>
@@ -119,7 +167,28 @@ export function CategorySelector({ value, onChange, error }: CategorySelectorPro
                                 contentContainerStyle={styles.gridContent}
                                 showsVerticalScrollIndicator={false}
                             >
-                                {categories.map((category) => {
+                                {currentView === 'subcategories' && (
+                                    <Pressable
+                                        style={[
+                                            styles.categoryItem,
+                                            {
+                                                backgroundColor: value === selectedParent.id.toString() ? `${selectedParent.color}15` : 'transparent',
+                                                borderColor: value === selectedParent.id.toString() ? selectedParent.color : 'transparent',
+                                                borderWidth: 1,
+                                            },
+                                        ]}
+                                        onPress={() => handleSelect(selectedParent)}
+                                    >
+                                        <View style={[styles.iconCircle, { backgroundColor: `${selectedParent.color}10` }]}>
+                                            <Ionicons name="ellipsis-horizontal" size={24} color={selectedParent.color} />
+                                        </View>
+                                        <Text style={[styles.categoryName, { color: colors.textSecondary }]}>
+                                            General {selectedParent.name}
+                                        </Text>
+                                    </Pressable>
+                                )}
+
+                                {displayedCategories.map((category: any) => {
                                     const isSelected = value === category.id.toString();
                                     const categoryColor = category.color || colors.primary;
                                     return (
@@ -133,7 +202,7 @@ export function CategorySelector({ value, onChange, error }: CategorySelectorPro
                                                     borderWidth: 1,
                                                 },
                                             ]}
-                                            onPress={() => handleSelect(category.id.toString())}
+                                            onPress={() => handleSelect(category)}
                                         >
                                             <View
                                                 style={[
@@ -161,6 +230,11 @@ export function CategorySelector({ value, onChange, error }: CategorySelectorPro
                                             >
                                                 {category.name}
                                             </Text>
+                                            {currentView === 'parents' && category.subcategories?.length > 0 && (
+                                                <View style={styles.badge}>
+                                                    <Text style={styles.badgeText}>{category.subcategories.length}</Text>
+                                                </View>
+                                            )}
                                         </Pressable>
                                     );
                                 })}
@@ -234,6 +308,13 @@ const styles = StyleSheet.create({
         padding: 20,
         borderBottomWidth: 1,
     },
+    modalHeaderLeft: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    backButton: {
+        marginRight: 12,
+    },
     modalTitle: {
         fontSize: 18,
         fontWeight: 'bold',
@@ -262,6 +343,23 @@ const styles = StyleSheet.create({
     categoryName: {
         fontSize: 12,
         textAlign: 'center',
+    },
+    badge: {
+        position: 'absolute',
+        top: 4,
+        right: 12,
+        backgroundColor: '#6366f1',
+        borderRadius: 10,
+        minWidth: 18,
+        height: 18,
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingHorizontal: 4,
+    },
+    badgeText: {
+        color: '#FFFFFF',
+        fontSize: 10,
+        fontWeight: 'bold',
     },
     centered: {
         padding: 40,
