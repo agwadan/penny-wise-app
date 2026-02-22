@@ -29,6 +29,7 @@ export function CategorySpendingChart({ refreshTrigger = false }: CategorySpendi
       try {
         if (data.length === 0) dispatch(setFinanceLoading(true));
         const spendingData = await getCategorySpending();
+
         // Ensure we have an array
         const results = Array.isArray(spendingData) ? spendingData : (spendingData.results || []);
         dispatch(setCategorySpending(results));
@@ -44,7 +45,23 @@ export function CategorySpendingChart({ refreshTrigger = false }: CategorySpendi
 
   const totalSpending = data.reduce((sum, item) => sum + item.amount, 0);
 
-  const chartData = data.map(item => {
+  // Group into Top 5 + Others
+  const sortedData = [...data].sort((a, b) => b.amount - a.amount);
+  const top5 = sortedData.slice(0, 5);
+  const remaining = sortedData.slice(5);
+
+  const displayData = remaining.length > 0
+    ? [
+      ...top5,
+      {
+        category: 'Others',
+        amount: remaining.reduce((sum, item) => sum + item.amount, 0),
+        color: '#94a3b8', // slate-400 for 'Others'
+      }
+    ]
+    : top5;
+
+  const chartData = displayData.map(item => {
     return {
       name: item.category,
       amount: item.amount,
