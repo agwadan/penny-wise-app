@@ -3,6 +3,7 @@ import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { RootState } from '@/store';
 import { toggleBalanceVisibility } from '@/store/showText';
+import { setBalance, setLoading as setFinanceLoading } from '@/store/finance';
 import { formatAmount, getTotalBalance } from '@/utils';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -23,21 +24,21 @@ export function AccountSummaryCard({
     const colors = Colors[colorScheme ?? 'light'];
     const dispatch = useDispatch();
     const isBalanceVisible = useSelector((state: RootState) => state.ui.isBalanceVisible);
-    const [totalBalance, setTotalBalance] = useState<number>(0);
-    const [accountCount, setAccountCount] = useState<number>(0);
-    const [loading, setLoading] = useState(true);
+    const { totalBalance, accountCount, isLoading } = useSelector((state: RootState) => state.finance);
+
 
     const fetchData = async () => {
         try {
-            setLoading(true);
+            dispatch(setFinanceLoading(true));
             const data = await getTotalBalance();
-            // Assuming the API returns { total_balance: number, count?: number }
-            setTotalBalance(data.total_balance || 0);
-            setAccountCount(data.number_of_accounts || 0);
+            dispatch(setBalance({
+                totalBalance: data.total_balance || 0,
+                accountCount: data.number_of_accounts || 0
+            }));
         } catch (error) {
             console.error('Error fetching account summary:', error);
         } finally {
-            setLoading(false);
+            dispatch(setFinanceLoading(false));
         }
     };
 

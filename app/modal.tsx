@@ -1,10 +1,14 @@
 import { AddTransactionModal } from '@/components/modals/add-transaction-modal';
 import { TransactionFormData } from '@/types';
-import { addTransaction, handleApiError } from '@/utils/api';
+import { addTransaction, handleApiError, getBalanceHistory, getCategorySpending, getTotalBalance } from '@/utils/api';
+import { fetchData as fetchApiData } from '@/utils';
+import { addIncome, addExpense, setBalanceHistory, setCategorySpending, setBalance, setTransactions } from '@/store/finance';
 import { router } from 'expo-router';
 import { Alert, StyleSheet } from 'react-native';
+import { useDispatch } from 'react-redux';
 
 export default function ModalScreen() {
+  const dispatch = useDispatch();
   const handleSubmit = async (data: TransactionFormData) => {
     try {
       // Format date as YYYY-MM-DD
@@ -42,6 +46,39 @@ export default function ModalScreen() {
       }
 
       await addTransaction(requestData);
+
+      // Update balance in store
+      const amount = data.amount;
+      if (data.type === 'expense') {
+        dispatch(addExpense(amount));
+      } else if (data.type === 'income') {
+        dispatch(addIncome(amount));
+      }
+      // Transfers don't change total balance
+
+      // Proactively refresh history and spending from API
+      try {
+        const [historyData, spendingData, balanceData, transactionsData] = await Promise.all([
+          getBalanceHistory(),
+          getCategorySpending(),
+          getTotalBalance(),
+          fetchApiData('auth/transactions/')
+        ]);
+
+        const spendingResults = Array.isArray(spendingData) ? spendingData : (spendingData.results || []);
+
+        dispatch(setBalanceHistory(historyData));
+        dispatch(setCategorySpending(spendingResults));
+        dispatch(setBalance({
+          totalBalance: balanceData.total_balance || 0,
+          accountCount: balanceData.number_of_accounts || 0
+        }));
+        dispatch(setTransactions(transactionsData.results || transactionsData));
+      } catch (refreshError) {
+        console.error('Failed to refresh financial stats:', refreshError);
+        // We don't block the user if refresh fails, as the transaction was successful
+      }
+
       Alert.alert('Success', 'Transaction added successfully');
       router.back();
     } catch (error) {

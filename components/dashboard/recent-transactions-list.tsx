@@ -8,6 +8,9 @@ import { fetchData, formatAmount, getCategories } from '@/utils';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '@/store';
+import { setTransactions, setCategories, setLoading as setFinanceLoading } from '@/store/finance';
 
 interface RecentTransactionsListProps {
     onViewAll?: () => void;
@@ -15,9 +18,8 @@ interface RecentTransactionsListProps {
 }
 
 export function RecentTransactionsList({ onViewAll, refreshTrigger = false }: RecentTransactionsListProps) {
-    const [transactions, setTransactions] = useState<Transaction[]>([]);
-    const [categories, setCategories] = useState<any[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const dispatch = useDispatch();
+    const { transactions, categories, isLoading } = useSelector((state: RootState) => state.finance);
     const colorScheme = useColorScheme();
     const colors = Colors[colorScheme ?? 'light'];
 
@@ -25,20 +27,18 @@ export function RecentTransactionsList({ onViewAll, refreshTrigger = false }: Re
         const loadData = async () => {
             try {
                 // Keep loading state if it's the first load
-                if (transactions.length === 0) setIsLoading(true);
+                if (transactions.length === 0) dispatch(setFinanceLoading(true));
 
                 const [transactionsData, categoriesData] = await Promise.all([
                     fetchData('auth/transactions/'),
                     getCategories()
                 ]);
-                setTransactions(transactionsData.results || transactionsData);
-                setCategories(categoriesData.results || categoriesData);
-                console.log('Transactions:', JSON.stringify(transactionsData, null, 2));
-                // console.log('Categories:', JSON.stringify(categoriesData, null, 2));
+                dispatch(setTransactions(transactionsData.results || transactionsData));
+                dispatch(setCategories(categoriesData.results || categoriesData));
             } catch (error) {
                 console.error('Failed to load dashboard data:', error);
             } finally {
-                setIsLoading(false);
+                dispatch(setFinanceLoading(false));
             }
         };
 

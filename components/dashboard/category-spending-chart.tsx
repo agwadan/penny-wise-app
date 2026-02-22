@@ -8,6 +8,9 @@ import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Dimensions, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { PieChart } from 'react-native-chart-kit';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '@/store';
+import { setCategorySpending, setLoading as setFinanceLoading } from '@/store/finance';
 
 interface CategorySpendingChartProps {
   refreshTrigger?: boolean;
@@ -17,21 +20,22 @@ export function CategorySpendingChart({ refreshTrigger = false }: CategorySpendi
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const screenWidth = Dimensions.get('window').width;
-  const [data, setData] = useState<CategorySpending[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const dispatch = useDispatch();
+  const { categorySpending: data = [], isLoading } = useSelector((state: RootState) => state.finance);
+
 
   useEffect(() => {
     const fetchSpending = async () => {
       try {
-        if (data.length === 0) setIsLoading(true);
+        if (data.length === 0) dispatch(setFinanceLoading(true));
         const spendingData = await getCategorySpending();
         // Ensure we have an array
         const results = Array.isArray(spendingData) ? spendingData : (spendingData.results || []);
-        setData(results);
+        dispatch(setCategorySpending(results));
       } catch (error) {
         console.error('Failed to load category spending:', error);
       } finally {
-        setIsLoading(false);
+        dispatch(setFinanceLoading(false));
       }
     };
 

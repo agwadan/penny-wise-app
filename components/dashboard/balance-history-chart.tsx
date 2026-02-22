@@ -8,6 +8,9 @@ import { getBalanceHistory } from '@/utils/api';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Dimensions, StyleSheet, View } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '@/store';
+import { setBalanceHistory, setLoading as setFinanceLoading } from '@/store/finance';
 
 interface BalanceHistoryChartProps {
     refreshTrigger?: boolean;
@@ -17,19 +20,20 @@ export function BalanceHistoryChart({ refreshTrigger = false }: BalanceHistoryCh
     const colorScheme = useColorScheme();
     const colors = Colors[colorScheme ?? 'light'];
     const screenWidth = Dimensions.get('window').width;
-    const [data, setData] = useState<BalanceHistoryItem[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const dispatch = useDispatch();
+    const { balanceHistory: data = [], isLoading } = useSelector((state: RootState) => state.finance);
+
 
     useEffect(() => {
         const fetchHistory = async () => {
             try {
-                if (data.length === 0) setIsLoading(true);
+                if (data.length === 0) dispatch(setFinanceLoading(true));
                 const historyData = await getBalanceHistory();
-                setData(historyData);
+                dispatch(setBalanceHistory(historyData));
             } catch (error) {
                 console.error('Failed to load balance history:', error);
             } finally {
-                setIsLoading(false);
+                dispatch(setFinanceLoading(false));
             }
         };
 
