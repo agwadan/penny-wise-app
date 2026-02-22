@@ -3,7 +3,7 @@ import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { RootState } from '@/store';
 import { toggleBalanceVisibility } from '@/store/showText';
-import { getTotalBalance } from '@/utils';
+import { formatAmount, getTotalBalance } from '@/utils';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useEffect, useState } from 'react';
@@ -45,24 +45,6 @@ export function AccountSummaryCard({
         fetchData();
     }, [refreshTrigger]);
 
-    const formatCurrency = (amount: number) => {
-        const currencySymbols: Record<string, string> = {
-            USD: '$',
-            EUR: '€',
-            GBP: '£',
-            KES: 'KSh',
-            UGX: 'UGX',
-        };
-
-        if (!isBalanceVisible) {
-            return `******`;
-        }
-
-        return `${currencySymbols[currency]} ${amount.toLocaleString('en-US', {
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0,
-        })}`;
-    };
 
     return (
         <LinearGradient
@@ -89,7 +71,7 @@ export function AccountSummaryCard({
 
                 {/* ==== Total Balance Figure ===== */}
                 <ThemedText style={styles.balance}>
-                    {formatCurrency(totalBalance)}
+                    {isBalanceVisible ? formatAmount(totalBalance, currency) : '******'}
                 </ThemedText>
                 <ThemedText style={styles.accountCount}>
                     Across {accountCount} {accountCount === 1 ? 'account' : 'accounts'}

@@ -3,7 +3,7 @@ import { ThemedView } from '@/components/themed-view';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { BalanceHistoryItem } from '@/types';
-import { formatCompactNumber } from '@/utils';
+import { formatAmount, formatCompactNumber } from '@/utils';
 import { getBalanceHistory } from '@/utils/api';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Dimensions, StyleSheet, View } from 'react-native';
@@ -36,9 +36,6 @@ export function BalanceHistoryChart({ refreshTrigger = false }: BalanceHistoryCh
         fetchHistory();
     }, [refreshTrigger]);
 
-    const formatCurrency = (amount: number) => {
-        return formatCompactNumber(amount);
-    };
 
     // Calculate today's balance (last item in history)
     const currentBalance = data.length > 0 ? data[data.length - 1].balance : 0;
@@ -142,8 +139,7 @@ export function BalanceHistoryChart({ refreshTrigger = false }: BalanceHistoryCh
         <ThemedView style={[styles.container, { backgroundColor: colors.cardBackground }]}>
             <ThemedText style={styles.title}>Balance History</ThemedText>
             <View style={styles.balanceContainer}>
-                <ThemedText style={styles.currencyPrefix}>UGX</ThemedText>
-                <ThemedText style={styles.balanceAmount}>{currentBalance.toLocaleString()}</ThemedText>
+                <ThemedText style={styles.balanceAmount}>{formatAmount(currentBalance, 'UGX')}</ThemedText>
             </View>
             <ThemedText style={[styles.subtitle, { color: colors.textSecondary }]}>
                 Last 30 Days

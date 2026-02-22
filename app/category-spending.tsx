@@ -4,6 +4,7 @@ import { ThemedView } from '@/components/themed-view';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { CategorySpending } from '@/types';
+import { formatAmount } from '@/utils';
 import { getCategorySpending, handleApiError } from '@/utils/api';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
@@ -55,12 +56,6 @@ export default function CategorySpendingScreen() {
 
   const totalSpending = data.reduce((sum, item) => sum + item.amount, 0);
 
-  const formatCurrency = (amount: number) => {
-    return `UGX ${amount.toLocaleString('en-US', {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    })}`;
-  };
 
   const renderCategoryItem = ({ item }: { item: CategorySpending }) => {
     const percentage = totalSpending > 0 ? (item.amount / totalSpending) * 100 : 0;
@@ -81,7 +76,7 @@ export default function CategorySpendingScreen() {
         <View style={styles.categoryInfo}>
           <View style={styles.nameRow}>
             <ThemedText style={styles.categoryName}>{item.category}</ThemedText>
-            <ThemedText style={styles.amountText}>{formatCurrency(item.amount)}</ThemedText>
+            <ThemedText style={styles.amountText}>{formatAmount(item.amount)}</ThemedText>
           </View>
 
           <View style={styles.progressContainer}>
@@ -131,7 +126,7 @@ export default function CategorySpendingScreen() {
         <View style={styles.content}>
           <View style={[styles.summaryCard, { backgroundColor: colors.primary }]}>
             <ThemedText style={styles.summaryLabel}>Total Spent (30 Days)</ThemedText>
-            <ThemedText style={styles.summaryAmount}>{formatCurrency(totalSpending)}</ThemedText>
+            <ThemedText style={styles.summaryAmount}>{formatAmount(totalSpending)}</ThemedText>
           </View>
 
           <FlatList

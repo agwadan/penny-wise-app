@@ -4,7 +4,7 @@ import { ThemedView } from '@/components/themed-view';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Transaction } from '@/types';
-import { fetchData, getCategories } from '@/utils';
+import { fetchData, formatAmount, getCategories } from '@/utils';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
@@ -33,6 +33,8 @@ export function RecentTransactionsList({ onViewAll, refreshTrigger = false }: Re
                 ]);
                 setTransactions(transactionsData.results || transactionsData);
                 setCategories(categoriesData.results || categoriesData);
+                console.log('Transactions:', JSON.stringify(transactionsData, null, 2));
+                // console.log('Categories:', JSON.stringify(categoriesData, null, 2));
             } catch (error) {
                 console.error('Failed to load dashboard data:', error);
             } finally {
@@ -43,20 +45,6 @@ export function RecentTransactionsList({ onViewAll, refreshTrigger = false }: Re
         loadData();
     }, [refreshTrigger]);
 
-    const formatCurrency = (amount: number, currency: string = 'UGX') => {
-        const symbols: Record<string, string> = {
-            USD: '$',
-            EUR: '€',
-            GBP: '£',
-            KES: 'KSh',
-            UGX: 'UGX',
-        };
-        const symbol = symbols[currency] || currency;
-        return `${symbol} ${amount.toLocaleString('en-US', {
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0,
-        })}`;
-    };
 
     const formatDate = (date: Date) => {
         const today = new Date();
@@ -108,7 +96,7 @@ export function RecentTransactionsList({ onViewAll, refreshTrigger = false }: Re
                 </View>
                 <View style={styles.transactionRight}>
                     <ThemedText style={[styles.amount, { color: amountColor }]}>
-                        {sign}{formatCurrency(parseFloat(item.amount) || 0, item.currency)}
+                        {sign}{formatAmount(item.amount, item.currency)}
                     </ThemedText>
                     <ThemedText style={[styles.date, { color: colors.textMuted }]}>
                         {formatDate(item.date || item.created_at || item.timestamp || new Date())}

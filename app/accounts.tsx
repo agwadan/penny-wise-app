@@ -2,6 +2,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { formatAmount } from '@/utils';
 import { API_ENDPOINTS, apiClient, handleApiError } from '@/utils/api';
 import { Ionicons } from '@expo/vector-icons';
 import { router, useFocusEffect } from 'expo-router';
@@ -53,7 +54,7 @@ export default function AccountsScreen() {
     try {
       const response = await apiClient.get<AccountsResponse>(API_ENDPOINTS.ACCOUNTS);
 
-      setAccounts(response.data);
+      setAccounts(response.data.data);
     } catch (err) {
       setError(handleApiError(err));
     } finally {
@@ -98,21 +99,6 @@ export default function AccountsScreen() {
     }
   };
 
-  const formatCurrency = (amount: string, currency: string) => {
-    const val = parseFloat(amount);
-    const currencySymbols: Record<string, string> = {
-      USD: '$',
-      EUR: '€',
-      GBP: '£',
-      KES: 'KSh',
-      UGX: 'UGX',
-    };
-    const symbol = currencySymbols[currency] || currency;
-    return `${symbol} ${val.toLocaleString('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    })}`;
-  };
 
   const renderAccountItem = ({ item }: { item: Account }) => (
     <TouchableOpacity
@@ -131,7 +117,7 @@ export default function AccountsScreen() {
       </View>
       <View style={styles.balanceContainer}>
         <ThemedText style={styles.balanceText}>
-          {formatCurrency(item.balance, item.currency)}
+          {formatAmount(item.balance, item.currency)}
         </ThemedText>
         {item.is_active && (
           <View style={styles.activeBadge}>

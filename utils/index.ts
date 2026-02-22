@@ -40,6 +40,18 @@ export const formatCompactNumber = (num: number): string => {
   return num.toString();
 };
 
+/**
+ * Formats a number with its currency abbreviation.
+ * e.g., 1000, UGX -> UGX 1,000
+ */
+export const formatAmount = (amount: number | string, currency: string = 'UGX'): string => {
+  const value = typeof amount === 'string' ? parseFloat(amount) : amount;
+  return `${currency} ${value.toLocaleString('en-US', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  })}`;
+};
+
 // Export API utilities for authentication and other features
 export * from './api';
 export * from './storage';

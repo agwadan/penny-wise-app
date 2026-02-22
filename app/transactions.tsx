@@ -3,6 +3,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { formatAmount } from '@/utils';
 import { API_ENDPOINTS, apiClient, getCategories, handleApiError } from '@/utils/api';
 import { Ionicons } from '@expo/vector-icons';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
@@ -82,21 +83,6 @@ export default function TransactionsScreen() {
     }, [])
   );
 
-  const formatCurrency = (amount: string, currency: string = 'UGX') => {
-    const val = parseFloat(amount);
-    const currencySymbols: Record<string, string> = {
-      USD: '$',
-      EUR: '€',
-      GBP: '£',
-      KES: 'KSh',
-      UGX: 'UGX',
-    };
-    const symbol = currencySymbols[currency] || currency;
-    return `${symbol} ${val.toLocaleString('en-US', {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    })}`;
-  };
 
   const getCategoryIcon = (categoryName: string) => {
     const category = categories.find(c => c.name === categoryName);
@@ -129,7 +115,7 @@ export default function TransactionsScreen() {
         </View>
         <View style={styles.amountContainer}>
           <ThemedText style={[styles.amountText, { color: amountColor }]}>
-            {isIncome ? '+' : '-'}{formatCurrency(item.amount, item.currency)}
+            {isIncome ? '+' : '-'}{formatAmount(item.amount, item.currency)}
           </ThemedText>
           <ThemedText style={[styles.dateText, { color: colors.textMuted }]}>
             {new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
